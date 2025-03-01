@@ -20,11 +20,11 @@ const {
 } = require('../validations/authValidation');
 
 // Public routes
-router.post('/register', validateRequest(registerSchema), register);
-router.post('/login', validateRequest(loginSchema), login);
+router.post('/register', register,validateRequest(registerSchema));
+router.post('/login', login,validateRequest(loginSchema));
 router.post('/refresh-token', refreshToken);
-router.post('/forgotpassword', validateRequest(forgotPasswordSchema), forgotPassword);
-router.put('/resetpassword/:resettoken', validateRequest(resetPasswordSchema), resetPassword);
+router.post('/forgotpassword', forgotPassword,validateRequest(forgotPasswordSchema));
+router.put('/resetpassword/:resettoken', resetPassword);
 
 // Protected routes
 router.use(protect);

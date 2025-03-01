@@ -27,14 +27,12 @@ const registerSchema = Joi.object({
 
 // User login validation schema
 const loginSchema = Joi.object({
-  email: Joi.string().email().required()
-    .label('Email') // Add label to show custom field name
+  email: Joi.string().email().required().label('Email')// Add label to show custom field name
     .messages({
       'string.empty': 'Email is required',
       'string.email': 'Please provide a valid email'
     }),
-  password: Joi.string().required()
-    .label('Password') // Add label
+  password: Joi.string().required() .label('Password')// Add label
     .messages({
       'string.empty': 'Password is required'
     })

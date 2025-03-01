@@ -4,6 +4,7 @@ const asyncHandler = require('../utils/asyncHandler');
 const ErrorResponse = require('../utils/errorResponse');
 const User = require('../models/User');
 const sendEmail = require('../utils/sendEmail');
+const STATUS_CODES = require('../utils/statusCodes');
 
 // Get token and create cookie
 const sendTokenResponse = (user, statusCode, res) => {
@@ -15,40 +16,24 @@ const sendTokenResponse = (user, statusCode, res) => {
   );
 
   // Create refresh token
-  const refreshToken = jwt.sign(
-    { id: user._id },
-    process.env.REFRESH_TOKEN_SECRET,
-    { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
-  );
+  // const refreshToken = jwt.sign(
+  //   { id: user._id },
+  //   process.env.REFRESH_TOKEN_SECRET,
+  //   { expiresIn: process.env.REFRESH_TOKEN_EXPIRE }
+  // );
 
-  const cookieOptions = {
-    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
-    httpOnly: true
-  };
-
-  if (process.env.NODE_ENV === 'production') {
-    cookieOptions.secure = true;
-  }
-
-  res
-    .status(statusCode)
-    .cookie('token', token, cookieOptions)
-    .cookie('refreshToken', refreshToken, {
-      ...cookieOptions,
-      expires: new Date(Date.now() + process.env.REFRESH_TOKEN_COOKIE_EXPIRE * 24 * 60 * 60 * 1000)
-    })
-    .json({
-      success: true,
-      token,
-      refreshToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      }
-    });
+  res.status(statusCode).json({
+    statusCode: statusCode,
+    token,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    }
+  });
 };
+
 
 // @desc    Register user
 // @route   POST /api/v1/auth/register
@@ -60,7 +45,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   const userExists = await User.findOne({ email });
   
   if (userExists) {
-    return next(new ErrorResponse('Email already in use', 400));
+    return next(new ErrorResponse('Email already in use', STATUS_CODES.BAD_REQUEST));
   }
 
   // Create user
@@ -81,21 +66,23 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   // Check if email and password exist
   if (!email || !password) {
-    return next(new ErrorResponse('Please provide an email and password', 400));
+    return next(new ErrorResponse('Please provide an email and password', STATUS_CODES.BAD_REQUEST));
   }
+
+  next();
 
   // Check for user
   const user = await User.findOne({ email }).select('+password');
 
   if (!user) {
-    return next(new ErrorResponse('Invalid credentials', 401));
+    return next(new ErrorResponse('Invalid credentials', STATUS_CODES.UNAUTHORIZED));
   }
 
   // Check if password matches
   const isMatch = await user.matchPassword(password);
 
   if (!isMatch) {
-    return next(new ErrorResponse('Invalid credentials', 401));
+    return next(new ErrorResponse('Invalid credentials', STATUS_CODES.UNAUTHORIZED));
   }
 
   sendTokenResponse(user, 200, res);
@@ -108,7 +95,7 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
   const { refreshToken } = req.body;
 
   if (!refreshToken) {
-    return next(new ErrorResponse('No refresh token provided', 400));
+    return next(new ErrorResponse('No refresh token provided', STATUS_CODES.BAD_REQUEST));
   }
 
   try {
@@ -119,7 +106,7 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
     const user = await User.findById(decoded.id);
     
     if (!user) {
-      return next(new ErrorResponse('No user found with this token', 404));
+      return next(new ErrorResponse('No user found with this token', STATUS_CODES.BAD_REQUEST));
     }
     
     // Generate new access token
@@ -134,7 +121,7 @@ exports.refreshToken = asyncHandler(async (req, res, next) => {
       token: newToken
     });
   } catch (err) {
-    return next(new ErrorResponse('Invalid refresh token', 401));
+    return next(new ErrorResponse('Invalid refresh token', STATUS_CODES.UNAUTHORIZED));
   }
 });
 
@@ -209,13 +196,13 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 
   // Check current password
   if (!(await user.matchPassword(req.body.currentPassword))) {
-    return next(new ErrorResponse('Current password is incorrect', 401));
+    return next(new ErrorResponse('Current password is incorrect', STATUS_CODES.UNAUTHORIZED));
   }
 
   user.password = req.body.newPassword;
   await user.save();
 
-  sendTokenResponse(user, 200, res);
+  sendTokenResponse(user, STATUS_CODES.OK, res);
 });
 
 // @desc    Forgot password
@@ -225,7 +212,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
-    return next(new ErrorResponse('There is no user with that email', 404));
+    return next(new ErrorResponse('There is no user with that email', STATUS_CODES.NOT_FOUND));
   }
 
   // Get reset token
@@ -262,7 +249,7 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false });
 
-    return next(new ErrorResponse('Email could not be sent', 500));
+    return next(new ErrorResponse('Email could not be sent', STATUS_CODES.INTERNAL_SERVER_ERROR));
   }
 });
 
@@ -282,7 +269,7 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(new ErrorResponse('Invalid token', 400));
+    return next(new ErrorResponse('Invalid token', STATUS_CODES.BAD_REQUEST));
   }
 
   // Set new password
@@ -292,5 +279,5 @@ exports.resetPassword = asyncHandler(async (req, res, next) => {
   
   await user.save();
 
-  sendTokenResponse(user, 200, res);
+  sendTokenResponse(user, STATUS_CODES.OK, res);
 });

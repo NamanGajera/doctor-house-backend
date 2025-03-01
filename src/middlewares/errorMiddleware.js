@@ -1,4 +1,5 @@
 const ErrorResponse = require('../utils/errorResponse');
+const STATUS_CODES = require('../utils/statusCodes');
 
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };
@@ -10,13 +11,13 @@ const errorHandler = (err, req, res, next) => {
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {
     const message = `Resource not found`;
-    error = new ErrorResponse(message, 404);
+    error = new ErrorResponse(message, STATUS_CODES.NOT_FOUND);
   }
 
   // Mongoose duplicate key
   if (err.code === 11000) {
     const message = `Duplicate field value entered`;
-    error = new ErrorResponse(message, 400);
+    error = new ErrorResponse(message, STATUS_CODES.BAD_REQUEST);
   }
 
   // Mongoose validation error
@@ -26,21 +27,21 @@ const errorHandler = (err, req, res, next) => {
       param: field,
       message: err.errors[field].message
     }));
-    error = new ErrorResponse(message.join(', '), 400, formattedErrors);
+    error = new ErrorResponse(message.join(', '), STATUS_CODES.BAD_REQUEST, formattedErrors);
   }
 
   // JWT errors
   if (err.name === 'JsonWebTokenError') {
-    error = new ErrorResponse('Invalid token', 401);
+    error = new ErrorResponse('Invalid token', STATUS_CODES.UNAUTHORIZED);
   }
 
   if (err.name === 'TokenExpiredError') {
-    error = new ErrorResponse('Token expired', 401);
+    error = new ErrorResponse('Token expired', STATUS_CODES.UNAUTHORIZED);
   }
 
   res.status(error.statusCode || 500).json({
-    success: false,
-    error: error.message || 'Server Error',
+    statusCode: error.statusCode,
+    message: error.message || 'Server Error',
     ...(error.errors && error.errors.length > 0 ? { errors: error.errors } : {})
   });
 };

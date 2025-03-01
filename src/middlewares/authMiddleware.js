@@ -53,11 +53,11 @@ exports.authorize = (...roles) => {
 exports.validateRequest = (schema) => {
   return (req, res, next) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
-
-    if (error) {
-      return next(new ErrorResponse(error.details[0].message.replace(/\"/g, ''), 400));
+    
+    if (!error) {
+      return;
     }
 
-    next();
+    return next(new ErrorResponse(error.details[0].message, 400));
   };
 };
