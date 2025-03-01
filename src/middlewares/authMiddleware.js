@@ -8,9 +8,9 @@ exports.protect = asyncHandler(async (req, res, next) => {
   let token;
   
   // Check if token exists in headers
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+  if (req.headers.authorization) {
     // Get token from Bearer token in header
-    token = req.headers.authorization.split(' ')[1];
+    token = req.headers.authorization;
   } 
   // Check if token exists in cookies
   else if (req.cookies && req.cookies.token) {
@@ -19,7 +19,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
   // Make sure token exists
   if (!token) {
-    return next(new ErrorResponse('Not authorized to access this route', 401));
+    return next(new ErrorResponse('Unauthorized Access', 401));
   }
 
   try {
@@ -35,7 +35,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
     
     next();
   } catch (err) {
-    return next(new ErrorResponse('Not authorized to access this route', 401));
+    return next(new ErrorResponse('Unauthorized Access', 401));
   }
 });
 

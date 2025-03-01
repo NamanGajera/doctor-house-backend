@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
@@ -11,6 +10,7 @@ const errorHandler = require('./middlewares/errorMiddleware');
 
 // Route files
 const authRoutes = require('./routes/authRoutes');
+const doctorCategoryRoutes = require('./routes/doctorCategory.route');
 
 // Initialize express
 const app = express();
@@ -18,8 +18,6 @@ const app = express();
 // Body parser
 app.use(express.json());
 
-// Cookie parser
-app.use(cookieParser());
 
 // Enable CORS
 app.use(cors({
@@ -54,6 +52,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Mount routers
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1', doctorCategoryRoutes);
 
 // Base route
 app.get('/', (req, res) => {
