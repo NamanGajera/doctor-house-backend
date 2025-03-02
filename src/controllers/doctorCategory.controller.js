@@ -17,7 +17,7 @@ exports.getCategory = async (req, res) => {
     } catch (error) {
         res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
             statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
-            message: `Error fetching categories: ${error.message}`,
+            message: `${error.message}`,
             error: error
         });
     }

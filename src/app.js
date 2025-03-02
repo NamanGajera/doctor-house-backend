@@ -11,6 +11,8 @@ const errorHandler = require('./middlewares/errorMiddleware');
 // Route files
 const authRoutes = require('./routes/authRoutes');
 const doctorCategoryRoutes = require('./routes/doctorCategory.route');
+const doctor = require('./routes/doctor.route');
+const hospital = require('./routes/hospital.route');
 
 // Initialize express
 const app = express();
@@ -53,6 +55,8 @@ if (process.env.NODE_ENV === 'development') {
 // Mount routers
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1', doctorCategoryRoutes);
+app.use('/api/v1', doctor);
+app.use('/api/v1', hospital);
 
 // Base route
 app.get('/', (req, res) => {
