@@ -13,6 +13,7 @@ const authRoutes = require('./routes/authRoutes');
 const doctorCategoryRoutes = require('./routes/doctorCategory.route');
 const doctor = require('./routes/doctor.route');
 const hospital = require('./routes/hospital.route');
+const appointment = require('./routes/appointment.route');
 
 // Initialize express
 const app = express();
@@ -33,14 +34,6 @@ app.use(helmet());
 // Prevent XSS attacks
 app.use(xss());
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 10 * 60 * 1000, // 10 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again after 10 minutes'
-});
-app.use('/api', limiter);
-
 // Prevent http param pollution
 app.use(hpp());
 
@@ -57,6 +50,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1', doctorCategoryRoutes);
 app.use('/api/v1', doctor);
 app.use('/api/v1', hospital);
+app.use('/api/v1',appointment);
 
 // Base route
 app.get('/', (req, res) => {
