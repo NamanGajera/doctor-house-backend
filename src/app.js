@@ -14,6 +14,7 @@ const doctorCategoryRoutes = require('./routes/doctorCategory.route');
 const doctor = require('./routes/doctor.route');
 const hospital = require('./routes/hospital.route');
 const appointment = require('./routes/appointment.route');
+const consent = require('./routes/userConsent.route');
 
 // Initialize express
 const app = express();
@@ -51,6 +52,7 @@ app.use('/api/v1', doctorCategoryRoutes);
 app.use('/api/v1', doctor);
 app.use('/api/v1', hospital);
 app.use('/api/v1',appointment);
+app.use('/api/v1',consent);
 
 // Base route
 app.get('/', (req, res) => {

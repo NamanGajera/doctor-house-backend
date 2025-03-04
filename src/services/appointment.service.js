@@ -23,8 +23,8 @@ exports.getUpcomingAppointments = async (options = {}) => {
     // Add a condition to compare appointmentDate (stored as string) with currentDateTime
     query.$expr = {
       $gte: [
-        { $toDate: "$appointmentDate" }, // Convert appointmentDate string to Date
-        currentDateTime // Compare with current date and time
+        { $toDate: "$appointmentDate" },  
+        currentDateTime
       ]
     };
 
@@ -35,10 +35,9 @@ exports.getUpcomingAppointments = async (options = {}) => {
 
     // Fetch the next 10 appointments
     const appointments = await Appointment.find(query)
-      .sort({ [sortBy]: sortDirection }) // Sort by appointmentDate ascending
-      .limit(limit); // Limit to 10 records
+      .sort({ [sortBy]: sortDirection })
+      .limit(limit);
 
-    console.log("Appointments:", appointments);
     return appointments;
 
   } catch (error) {
