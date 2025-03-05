@@ -12,7 +12,7 @@ exports.getTopDoctors = async (req, res) => {
       experience: data.experience,
       rating: data.rating,
       address: data.address,
-      isLike: data.isLike,
+      isLiked: data.isLiked,
     }));
 
     res.status(STATUS_CODES.OK).json({
@@ -44,7 +44,7 @@ exports.getDoctorById = async (req, res) => {
       address: doctorDetails.address,
       latitude: doctorDetails.latitude,
       longitude: doctorDetails.longitude,
-      isLike: doctorDetails.isLike,
+      isLiked: doctorDetails.isLiked,
       about: doctorDetails.about,
       specializations: doctorDetails.specializations,
       qualifications: doctorDetails.qualifications,
@@ -82,6 +82,68 @@ exports.getCategory = async (req, res) => {
     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
       message: `${error.message}`,
+      error: error,
+    });
+  }
+};
+
+exports.toggleDoctorWishlist = async (req, res) => {
+  try {
+    const { doctorId, isLiked } = req.body;
+    const userId = req.user._id;
+
+    console.log(`userId ${userId}`);
+
+    // Validate input
+    if (!doctorId) {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Doctor ID is required",
+      });
+    }
+
+    if (typeof isLiked !== "boolean") {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Invalid wishlist status. Must be a boolean value.",
+      });
+    }
+
+    const result = await doctorService.toggleDoctorWishlist(
+      doctorId,
+      userId,
+      isLiked
+    );
+
+    res.status(STATUS_CODES.OK).json({
+      statusCode: res.statusCode,
+      message: isLiked
+        ? "Doctor added to wishlist"
+        : "Doctor removed from wishlist",
+    });
+  } catch (error) {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+exports.getUserLikedDoctors = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const likedDoctors = await doctorService.getUserLikedDoctors(userId);
+
+    res.status(STATUS_CODES.OK).json({
+      data: likedDoctors,
+      statusCode: res.statusCode,
+    });
+  } catch (error) {
+    res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      message: error.message,
       error: error,
     });
   }

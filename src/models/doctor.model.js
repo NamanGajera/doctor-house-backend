@@ -3,48 +3,58 @@ const mongoose = require("mongoose");
 const timeSlotSchema = new mongoose.Schema({
   date: {
     type: Date,
-    required: true
+    required: true,
   },
-  availableSlots: [{
-    startTime: {
-      type: String,
-      required: true,
-      // Format: HH:MM (24-hour format)
-      match: /^([01]\d|2[0-3]):([0-5]\d)$/
+  availableSlots: [
+    {
+      startTime: {
+        type: String,
+        required: true,
+        // Format: HH:MM (24-hour format)
+        match: /^([01]\d|2[0-3]):([0-5]\d)$/,
+      },
+      endTime: {
+        type: String,
+        required: true,
+        // Format: HH:MM (24-hour format)
+        match: /^([01]\d|2[0-3]):([0-5]\d)$/,
+      },
+      isBooked: {
+        type: Boolean,
+        default: false,
+      },
     },
-    endTime: {
-      type: String,
-      required: true,
-      // Format: HH:MM (24-hour format)
-      match: /^([01]\d|2[0-3]):([0-5]\d)$/
-    },
-    isBooked: {
-      type: Boolean,
-      default: false
-    }
-  }]
+  ],
 });
 
 const workingHoursSchema = new mongoose.Schema({
   day: {
     type: String,
-    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-    required: true
+    enum: [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ],
+    required: true,
   },
   startTime: {
     type: String,
     required: true,
-    match: /^([01]\d|2[0-3]):([0-5]\d)$/
+    match: /^([01]\d|2[0-3]):([0-5]\d)$/,
   },
   endTime: {
     type: String,
     required: true,
-    match: /^([01]\d|2[0-3]):([0-5]\d)$/
+    match: /^([01]\d|2[0-3]):([0-5]\d)$/,
   },
   isAvailable: {
     type: Boolean,
-    default: true
-  }
+    default: true,
+  },
 });
 
 const doctorSchema = new mongoose.Schema(
@@ -104,31 +114,39 @@ const doctorSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    isLike: {
+    isLiked: {
       type: Boolean,
       default: false,
     },
+    likedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
     // New fields
     about: {
       type: String,
       trim: true,
-      maxlength: 1000 // Optional: limit description length
+      maxlength: 1000, // Optional: limit description length
     },
-    qualifications: [{
-      degree: {
-        type: String,
-        trim: true
+    qualifications: [
+      {
+        degree: {
+          type: String,
+          trim: true,
+        },
+        institution: {
+          type: String,
+          trim: true,
+        },
+        year: {
+          type: Number,
+        },
       },
-      institution: {
-        type: String,
-        trim: true
-      },
-      year: {
-        type: Number
-      }
-    }],
+    ],
     workingHours: [workingHoursSchema],
-    timeSlots: [timeSlotSchema]
+    timeSlots: [timeSlotSchema],
   },
   { timestamps: true }
 );

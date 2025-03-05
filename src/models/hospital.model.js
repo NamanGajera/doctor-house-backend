@@ -62,7 +62,7 @@ const hospitalSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    isLike: {
+    isLiked: {
       type: Boolean,
       default: false,
     },
