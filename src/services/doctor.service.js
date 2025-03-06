@@ -2,6 +2,7 @@ const doctor = require("../models/doctor.model");
 const doctorCategory = require("../models/options.model");
 const ErrorResponse = require("../utils/errorResponse");
 const STATUS_CODES = require("../utils/statusCodes");
+const mongoose = require("mongoose");
 
 exports.getTopDoctors = async () => {
   try {
@@ -13,6 +14,9 @@ exports.getTopDoctors = async () => {
 
 exports.getDoctorById = async (doctorId) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(doctorId)) {
+      throw new ErrorResponse("Invalid doctor ID", STATUS_CODES.BAD_REQUEST);
+    }
     const doctorDetails = await doctor.findById(doctorId);
 
     if (!doctorDetails) {
@@ -33,8 +37,11 @@ exports.getAllCategories = async () => {
   }
 };
 
-exports.toggleDoctorWishlist = async (doctorId, userId, isWishlisted) => {
+exports.toggleDoctorLike = async (doctorId, userId, isWishlisted) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(doctorId)) {
+      throw new ErrorResponse("Invalid doctor ID", STATUS_CODES.BAD_REQUEST);
+    }
     const doctorDetails = await doctor.findById(doctorId);
 
     if (!doctorDetails) {

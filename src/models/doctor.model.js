@@ -147,6 +147,10 @@ const doctorSchema = new mongoose.Schema(
     ],
     workingHours: [workingHoursSchema],
     timeSlots: [timeSlotSchema],
+    hospitalId: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

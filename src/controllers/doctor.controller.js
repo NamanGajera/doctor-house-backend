@@ -50,6 +50,7 @@ exports.getDoctorById = async (req, res) => {
       qualifications: doctorDetails.qualifications,
       workingHours: doctorDetails.workingHours,
       timeSlots: doctorDetails.timeSlots,
+      hospitalId: doctorDetails.hospitalId,
     };
 
     res.status(STATUS_CODES.OK).json({
@@ -87,12 +88,10 @@ exports.getCategory = async (req, res) => {
   }
 };
 
-exports.toggleDoctorWishlist = async (req, res) => {
+exports.toggleDoctorLike = async (req, res) => {
   try {
     const { doctorId, isLiked } = req.body;
     const userId = req.user._id;
-
-    console.log(`userId ${userId}`);
 
     // Validate input
     if (!doctorId) {
@@ -109,7 +108,7 @@ exports.toggleDoctorWishlist = async (req, res) => {
       });
     }
 
-    const result = await doctorService.toggleDoctorWishlist(
+    const result = await doctorService.toggleDoctorLike(
       doctorId,
       userId,
       isLiked
@@ -120,6 +119,7 @@ exports.toggleDoctorWishlist = async (req, res) => {
       message: isLiked
         ? "Doctor added to wishlist"
         : "Doctor removed from wishlist",
+      result: result,
     });
   } catch (error) {
     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
