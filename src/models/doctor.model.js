@@ -66,8 +66,7 @@ const doctorSchema = new mongoose.Schema(
     },
     doctorType: {
       type: String,
-      required: true,
-      trim: true,
+      default: null,
     },
     experience: {
       type: String,
@@ -124,7 +123,6 @@ const doctorSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
-    // New fields
     about: {
       type: String,
       trim: true,
@@ -148,6 +146,10 @@ const doctorSchema = new mongoose.Schema(
     workingHours: [workingHoursSchema],
     timeSlots: [timeSlotSchema],
     hospitalId: {
+      type: String,
+      default: null,
+    },
+    categoryId: {
       type: String,
       default: null,
     },

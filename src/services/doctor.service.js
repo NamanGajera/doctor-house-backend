@@ -84,10 +84,6 @@ exports.getUserLikedDoctors = async (userId) => {
     return likedDoctors.map((doc) => ({
       id: doc._id,
       name: doc.name,
-      doctorType: doc.doctorType,
-      experience: doc.experience,
-      rating: doc.rating,
-      address: doc.address,
       isLiked: true, // Since we're fetching liked doctors, this is always true
     }));
   } catch (error) {

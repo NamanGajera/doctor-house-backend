@@ -5,7 +5,7 @@ exports.getTopDoctors = async (req, res) => {
   try {
     const topDoctor = await doctorService.getTopDoctors();
 
-    const topDoctorData = topDoctor.map((data) => ({
+    const topDoctorData = topDoctor.map(async (data) => ({
       id: data._id,
       name: data.name,
       doctorType: data.doctorType,
@@ -13,6 +13,7 @@ exports.getTopDoctors = async (req, res) => {
       rating: data.rating,
       address: data.address,
       isLiked: data.isLiked,
+      categoryId: data.categoryId,
     }));
 
     res.status(STATUS_CODES.OK).json({
@@ -68,7 +69,7 @@ exports.getDoctorById = async (req, res) => {
 
 exports.getCategory = async (req, res) => {
   try {
-    const categories = await doctorCategoryService.getAllCategories();
+    const categories = await doctorService.getAllCategories();
 
     const formattedCategories = categories.map((category) => ({
       id: category._id,
