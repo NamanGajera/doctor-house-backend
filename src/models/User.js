@@ -65,12 +65,36 @@ const userSchema = new mongoose.Schema(
       },
     },
 
-    // Existing other fields...
+    // Password Reset Fields
+    resetPasswordToken: String,
+    resetPasswordExpire: Date,
+
+    // User Role
+    role: {
+      type: String,
+      enum: ["user", "admin"],
+      default: "user",
+    },
   },
   {
     timestamps: true,
   }
 );
+
+// Password encryption middleware - Add this FIRST
+userSchema.pre("save", async function (next) {
+  // Only hash the password if it's modified (or new)
+  if (!this.isModified("password")) {
+    return next();
+  }
+
+  // Generate salt
+  const salt = await bcrypt.genSalt(10);
+
+  // Hash password with salt
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
 
 // Modify the pre-save middleware to skip validation for partial updates
 userSchema.pre("save", function (next) {
@@ -96,7 +120,10 @@ userSchema.methods.partialUpdate = function (updateData) {
   return this.save();
 };
 
-// Existing methods and statics...
+// Method to check if entered password matches with stored hashed password
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 
