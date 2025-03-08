@@ -3,10 +3,13 @@ const doctorCategory = require("../models/options.model");
 const ErrorResponse = require("../utils/errorResponse");
 const STATUS_CODES = require("../utils/statusCodes");
 const mongoose = require("mongoose");
+const { attachCategoriesToDoctors } = require("../utils/doctor.utils");
 
 exports.getTopDoctors = async () => {
   try {
-    return await doctor.find({ rating: { $gt: 4.4 } });
+    const topDoctors = await doctor.find({ rating: { $gt: 4.4 } });
+    const doctorsWithCategories = await attachCategoriesToDoctors(topDoctors);
+    return doctorsWithCategories;
   } catch (error) {
     throw new ErrorResponse(error.message, STATUS_CODES.BAD_REQUEST);
   }
@@ -88,5 +91,23 @@ exports.getUserLikedDoctors = async (userId) => {
     }));
   } catch (error) {
     throw new ErrorResponse(error.message, STATUS_CODES.BAD_REQUEST);
+  }
+};
+
+exports.getDoctorByCategoryId = async (categoryId) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      throw new ErrorResponse("Invalid category id", STATUS_CODES.BAD_REQUEST);
+    }
+
+    const doctorsData = await doctor.find({ categoryId: categoryId });
+
+    if (doctorsData.length === 0) {
+      return [];
+    }
+
+    return doctorsData;
+  } catch (error) {
+    throw new ErrorResponse(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }
 };

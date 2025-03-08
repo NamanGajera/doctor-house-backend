@@ -1,11 +1,13 @@
+const { default: mongoose } = require("mongoose");
 const doctorService = require("../services/doctor.service");
 const STATUS_CODES = require("../utils/statusCodes");
+const ErrorResponse = require("../utils/errorResponse");
 
 exports.getTopDoctors = async (req, res) => {
   try {
-    const topDoctor = await doctorService.getTopDoctors();
+    const topDoctors = await doctorService.getTopDoctors();
 
-    const topDoctorData = topDoctor.map(async (data) => ({
+    const topDoctorData = topDoctors.map((data) => ({
       id: data._id,
       name: data.name,
       doctorType: data.doctorType,
@@ -14,6 +16,15 @@ exports.getTopDoctors = async (req, res) => {
       address: data.address,
       isLiked: data.isLiked,
       categoryId: data.categoryId,
+      // Include category information
+      category: data.category
+        ? {
+            id: data.category._id,
+            name: data.category.name,
+            description: data.category.description,
+            // Include other category fields as needed
+          }
+        : null,
     }));
 
     res.status(STATUS_CODES.OK).json({
@@ -144,6 +155,47 @@ exports.getUserLikedDoctors = async (req, res) => {
   } catch (error) {
     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
+      message: error.message,
+      error: error,
+    });
+  }
+};
+
+exports.getDoctorBYCategoryId = async (req, res) => {
+  try {
+    const categoryId = req.params.id;
+
+    console.log(`doctorData ${categoryId}`);
+
+    const docData = await doctorService.getDoctorByCategoryId(categoryId);
+
+    const formattedDoctorData = docData.map((doctorDetails) => ({
+      id: doctorDetails._id,
+      name: doctorDetails.name,
+      doctorType: doctorDetails.doctorType,
+      experience: doctorDetails.experience,
+      rating: doctorDetails.rating,
+      city: doctorDetails.city,
+      state: doctorDetails.state,
+      address: doctorDetails.address,
+      latitude: doctorDetails.latitude,
+      longitude: doctorDetails.longitude,
+      isLiked: doctorDetails.isLiked,
+      about: doctorDetails.about,
+      specializations: doctorDetails.specializations,
+      qualifications: doctorDetails.qualifications,
+      workingHours: doctorDetails.workingHours,
+      timeSlots: doctorDetails.timeSlots,
+      hospitalId: doctorDetails.hospitalId,
+    }));
+
+    res.status(STATUS_CODES.OK).json({
+      data: formattedDoctorData,
+      statusCode: STATUS_CODES.OK,
+    });
+  } catch (error) {
+    res.status(error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+      statusCode: error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR,
       message: error.message,
       error: error,
     });

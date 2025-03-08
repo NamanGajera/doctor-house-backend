@@ -9,5 +9,10 @@ router.get("/doc-category", protect, doctorController.getCategory);
 
 router.put("/like-doctor", protect, doctorController.toggleDoctorLike);
 router.get("/get-liked-doctors", protect, doctorController.getUserLikedDoctors);
+router.get(
+  "/doctorByCategoryId/:id",
+  protect,
+  doctorController.getDoctorBYCategoryId
+);
 
 module.exports = router;
