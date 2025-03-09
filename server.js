@@ -11,7 +11,7 @@ connectDB();
 
 const PORT = process.env.PORT || 5000;
 
-const LOCAL_IP = process.env.LOCAL_IP || "192.168.1.14";
+const LOCAL_IP = process.env.LOCAL_IP || "192.168.1.7";
 
 const server = app.listen(PORT, LOCAL_IP, () => {
   console.log(`Server running on http://${LOCAL_IP}:${PORT}`);

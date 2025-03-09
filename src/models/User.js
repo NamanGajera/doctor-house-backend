@@ -33,7 +33,12 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
 
-    // Rest of the schema remains the same...
+    // Consent field addition
+    hasAcceptedConsent: {
+      type: Boolean,
+      default: false,
+    },
+
     profile: {
       firstName: {
         type: String,
@@ -117,6 +122,12 @@ userSchema.methods.partialUpdate = function (updateData) {
     }
   });
 
+  return this.save();
+};
+
+// Method to update consent status
+userSchema.methods.updateConsent = function (hasAccepted) {
+  this.hasAcceptedConsent = hasAccepted;
   return this.save();
 };
 
