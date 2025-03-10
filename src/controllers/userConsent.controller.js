@@ -1,5 +1,5 @@
-const userConsentService = require('../services/userConsent.service');
-const STATUS_CODES = require('../utils/statusCodes');
+const userConsentService = require("../services/userConsent.service");
+const STATUS_CODES = require("../utils/statusCodes");
 
 exports.createOrUpdateUserConsent = async (req, res) => {
   try {
@@ -11,8 +11,8 @@ exports.createOrUpdateUserConsent = async (req, res) => {
 
     // Create or update user consent
     const userConsent = await userConsentService.createOrUpdateUserConsent(
-      userId, 
-      req.body, 
+      userId,
+      req.body,
       profileImage
     );
 
@@ -28,23 +28,24 @@ exports.createOrUpdateUserConsent = async (req, res) => {
       bloodGroup: userConsent.medicalDetails?.bloodGroup,
       allergies: userConsent.medicalDetails?.allergies,
       medicalConditions: userConsent.medicalDetails?.medicalConditions,
-      emergencyContact: userConsent.medicalDetails?.emergencyContact,
+      emergencyContact: userConsent.medicalDetails?.emergencyContact || null,
       privacySettings: {
         dataSharing: userConsent.privacySettings?.dataSharing,
-        marketingCommunication: userConsent.privacySettings?.marketingCommunication
+        marketingCommunication:
+          userConsent.privacySettings?.marketingCommunication,
       },
-      consentDate: userConsent.medicalConsent.consentDate
+      consentDate: userConsent.medicalConsent.consentDate,
     };
 
     res.status(STATUS_CODES.OK).json({
       statusCode: res.statusCode,
       data: responseData,
-      message: 'User consent processed successfully'
+      message: "User consent processed successfully",
     });
   } catch (error) {
     res.status(error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       statusCode: error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      message: error.message || 'Error processing user consent',
+      message: error.message || "Error processing user consent",
     });
   }
 };
@@ -72,20 +73,21 @@ exports.getUserConsent = async (req, res) => {
       emergencyContact: userConsent.medicalDetails?.emergencyContact,
       privacySettings: {
         dataSharing: userConsent.privacySettings?.dataSharing,
-        marketingCommunication: userConsent.privacySettings?.marketingCommunication
+        marketingCommunication:
+          userConsent.privacySettings?.marketingCommunication,
       },
-      consentDate: userConsent.medicalConsent.consentDate
+      consentDate: userConsent.medicalConsent.consentDate,
     };
 
     res.status(STATUS_CODES.OK).json({
       statusCode: res.statusCode,
       data: responseData,
-      message: 'User consent retrieved successfully'
+      message: "User consent retrieved successfully",
     });
   } catch (error) {
     res.status(error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR).json({
       statusCode: error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR,
-      message: error.message || 'Error retrieving user consent',
+      message: error.message || "Error retrieving user consent",
     });
   }
 };

@@ -4,7 +4,6 @@ const { GENDER } = require("../utils/enums");
 
 const userSchema = new mongoose.Schema(
   {
-    // Core Authentication Fields
     name: {
       type: String,
       required: function () {

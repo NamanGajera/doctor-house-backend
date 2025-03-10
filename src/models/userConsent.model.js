@@ -14,17 +14,14 @@ const userConsentSchema = new mongoose.Schema(
     personalDetails: {
       firstName: {
         type: String,
-        required: [true, "First Name is required"],
         trim: true,
       },
       lastName: {
         type: String,
-        required: [true, "Last Name is required"],
         trim: true,
       },
       phoneNumber: {
         type: String,
-        required: [true, "Phone Number is required"],
         validate: {
           validator: function (v) {
             return /^[+]?[\d\s()-]{10,15}$/.test(v);
@@ -35,11 +32,9 @@ const userConsentSchema = new mongoose.Schema(
       gender: {
         type: String,
         enum: Object.values(GENDER),
-        required: [true, "Gender is required"],
       },
       age: {
         type: Number,
-        required: [true, "Age is required"],
         min: [0, "Age must be a positive number"],
       },
     },

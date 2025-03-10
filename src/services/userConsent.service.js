@@ -1,9 +1,16 @@
-const UserConsent = require('../models/userConsent.model');
-const ErrorResponse = require('../utils/errorResponse');
-const STATUS_CODES = require('../utils/statusCodes');
-const { uploadToCloudinary, deleteFromCloudinary } = require('../utils/cloudinaryUpload');
+const UserConsent = require("../models/userConsent.model");
+const ErrorResponse = require("../utils/errorResponse");
+const STATUS_CODES = require("../utils/statusCodes");
+const {
+  uploadToCloudinary,
+  deleteFromCloudinary,
+} = require("../utils/cloudinaryUpload");
 
-exports.createOrUpdateUserConsent = async (userId, consentData, profileImage) => {
+exports.createOrUpdateUserConsent = async (
+  userId,
+  consentData,
+  profileImage
+) => {
   try {
     // Check if user consent already exists
     let userConsent = await UserConsent.findOne({ user: userId });
@@ -12,12 +19,15 @@ exports.createOrUpdateUserConsent = async (userId, consentData, profileImage) =>
     let imageUploadResult = null;
     if (profileImage) {
       // If user already has a profile image, delete the old one
-      if (userConsent && userConsent.profileImage) {
+      if (userConsent && userConsent.profileImage?.publicId) {
         await deleteFromCloudinary(userConsent.profileImage.publicId);
       }
 
       // Upload new profile image
-      imageUploadResult = await uploadToCloudinary(profileImage, 'user_consents');
+      imageUploadResult = await uploadToCloudinary(
+        profileImage,
+        "user_consents"
+      );
     }
 
     // Prepare consent data
@@ -28,30 +38,30 @@ exports.createOrUpdateUserConsent = async (userId, consentData, profileImage) =>
         lastName: consentData.lastName,
         phoneNumber: consentData.phoneNumber,
         gender: consentData.gender,
-        age: consentData.age
+        age: consentData.age,
       },
       medicalDetails: {
         bloodGroup: consentData.bloodGroup,
         allergies: consentData.allergies || [],
         medicalConditions: consentData.medicalConditions || [],
-        emergencyContact: consentData.emergencyContact || {}
+        emergencyContact: consentData.emergencyContact || null,
       },
       medicalConsent: {
         hasConsented: true,
         consentDate: new Date(),
-        consentVersion: '1.0'
+        consentVersion: "1.0",
       },
       privacySettings: {
         dataSharing: consentData.dataSharing || false,
-        marketingCommunication: consentData.marketingCommunication || false
-      }
+        marketingCommunication: consentData.marketingCommunication || false,
+      },
     };
 
     // Add profile image if uploaded
     if (imageUploadResult) {
       consentPayload.profileImage = {
         url: imageUploadResult.secure_url,
-        publicId: imageUploadResult.public_id
+        publicId: imageUploadResult.public_id,
       };
     }
 
@@ -68,9 +78,9 @@ exports.createOrUpdateUserConsent = async (userId, consentData, profileImage) =>
 
     return userConsent;
   } catch (error) {
-    console.error('Error in createOrUpdateUserConsent:', error);
+    console.error("Error in createOrUpdateUserConsent:", error);
     throw new ErrorResponse(
-      `Error processing user consent: ${error.message}`, 
+      `Error processing user consent: ${error.message}`,
       error.statusCode || STATUS_CODES.BAD_REQUEST
     );
   }
@@ -78,17 +88,19 @@ exports.createOrUpdateUserConsent = async (userId, consentData, profileImage) =>
 
 exports.getUserConsent = async (userId) => {
   try {
-    const userConsent = await UserConsent.findOne({ user: userId }).select('-__v');
+    const userConsent = await UserConsent.findOne({ user: userId }).select(
+      "-__v"
+    );
 
     if (!userConsent) {
-      throw new ErrorResponse('User consent not found', STATUS_CODES.NOT_FOUND);
+      throw new ErrorResponse("User consent not found", STATUS_CODES.NOT_FOUND);
     }
 
     return userConsent;
   } catch (error) {
-    console.error('Error in getUserConsent:', error);
+    console.error("Error in getUserConsent:", error);
     throw new ErrorResponse(
-      `Error retrieving user consent: ${error.message}`, 
+      `Error retrieving user consent: ${error.message}`,
       error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR
     );
   }
