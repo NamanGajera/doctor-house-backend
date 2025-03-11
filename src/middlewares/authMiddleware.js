@@ -59,10 +59,10 @@ exports.validateRequest = (schema) => {
   return (req, res, next) => {
     const { error } = schema.validate(req.body, { abortEarly: false });
 
-    if (!error) {
-      return;
+    if (error) {
+      return next(new ErrorResponse(error.details[0].message, 400));
     }
 
-    return next(new ErrorResponse(error.details[0].message, 400));
+    next(); // Ensure the request moves to the next middleware/controller
   };
 };

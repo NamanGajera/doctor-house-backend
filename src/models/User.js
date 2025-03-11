@@ -31,42 +31,65 @@ const userSchema = new mongoose.Schema(
       minlength: [6, "Password should be at least 6 characters"],
       select: false,
     },
-
-    // Consent field addition
-    hasAcceptedConsent: {
+    // Profile fields - all required for profile completion
+    firstName: {
+      type: String,
+      trim: true,
+      required: [
+        function () {
+          return this.isProfileCompleted;
+        },
+        "First name is required",
+      ],
+    },
+    lastName: {
+      type: String,
+      trim: true,
+      required: [
+        function () {
+          return this.isProfileCompleted;
+        },
+        "Last name is required",
+      ],
+    },
+    gender: {
+      type: String,
+      enum: Object.values(GENDER),
+      required: [
+        function () {
+          return this.isProfileCompleted;
+        },
+        "Gender is required",
+      ],
+    },
+    mobileNumber: {
+      type: String,
+      trim: true,
+      required: [
+        function () {
+          return this.isProfileCompleted;
+        },
+        "Mobile number is required",
+      ],
+    },
+    profileImage: {
+      url: String,
+      publicId: String,
+    },
+    age: {
+      type: Number,
+      min: [0, "Age cannot be negative"],
+      required: [
+        function () {
+          return this.isProfileCompleted;
+        },
+        "Age is required",
+      ],
+    },
+    // Profile completion status
+    isProfileCompleted: {
       type: Boolean,
       default: false,
-    },
-
-    profile: {
-      firstName: {
-        type: String,
-        trim: true,
-      },
-      lastName: {
-        type: String,
-        trim: true,
-      },
-      gender: {
-        type: String,
-        enum: Object.values(GENDER),
-      },
-      dateOfBirth: {
-        type: Date,
-      },
-      profileImage: {
-        url: String,
-        publicId: String,
-      },
-      phoneNumber: {
-        type: String,
-        validate: {
-          validator: function (v) {
-            return /^[+]?[\d\s()-]{10,15}$/.test(v);
-          },
-          message: (props) => `${props.value} is not a valid phone number!`,
-        },
-      },
     },
 
     // Password Reset Fields
@@ -85,7 +108,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-// Password encryption middleware - Add this FIRST
+// Password encryption middleware
 userSchema.pre("save", async function (next) {
   // Only hash the password if it's modified (or new)
   if (!this.isModified("password")) {
@@ -108,7 +131,7 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-// Add a method to perform partial updates
+// Method to perform partial updates
 userSchema.methods.partialUpdate = function (updateData) {
   // Mark this as a partial update to skip validation
   this.isPartialUpdate = true;
@@ -116,7 +139,7 @@ userSchema.methods.partialUpdate = function (updateData) {
   // Update only the provided fields
   Object.keys(updateData).forEach((key) => {
     // Prevent overwriting core authentication fields
-    if (!["name", "email", "password"].includes(key)) {
+    if (!["email", "password"].includes(key)) {
       this.set(key, updateData[key]);
     }
   });
@@ -126,7 +149,7 @@ userSchema.methods.partialUpdate = function (updateData) {
 
 // Method to update consent status
 userSchema.methods.updateConsent = function (hasAccepted) {
-  this.hasAcceptedConsent = hasAccepted;
+  this.isProfileCompleted = hasAccepted;
   return this.save();
 };
 

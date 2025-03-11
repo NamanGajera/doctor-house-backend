@@ -13,7 +13,7 @@ const authRoutes = require("./routes/authRoutes");
 const doctor = require("./routes/doctor.route");
 const hospital = require("./routes/hospital.route");
 const appointment = require("./routes/appointment.route");
-const consent = require("./routes/userConsent.route");
+const profileRoute = require("./routes/profile.route");
 
 // Initialize express
 const app = express();
@@ -51,7 +51,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1", doctor);
 app.use("/api/v1", hospital);
 app.use("/api/v1", appointment);
-app.use("/api/v1", consent);
+app.use("/api/v1", profileRoute);
 
 // Base route
 app.get("/", (req, res) => {
