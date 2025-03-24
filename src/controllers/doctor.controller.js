@@ -85,10 +85,11 @@ exports.getCategory = async (req, res) => {
     const formattedCategories = categories.map((category) => ({
       id: category._id,
       name: category.name,
+      image: category.image,
     }));
 
     res.status(STATUS_CODES.OK).json({
-      data: formattedCategories,
+      doctorCategoryData: formattedCategories,
       statusCode: res.statusCode,
     });
   } catch (error) {

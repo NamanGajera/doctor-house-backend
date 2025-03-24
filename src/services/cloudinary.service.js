@@ -2,13 +2,6 @@ const cloudinary = require("../config/cloudinary");
 const ErrorResponse = require("../utils/errorResponse");
 const STATUS_CODES = require("../utils/statusCodes");
 
-/**
- * Upload a file buffer directly to Cloudinary
- * @param {Buffer} fileBuffer - The file buffer
- * @param {String} folder - Folder name on Cloudinary
- * @param {Object} options - Additional upload options
- * @returns {Promise<Object>} Cloudinary upload result
- */
 exports.uploadBuffer = async (fileBuffer, folder = "uploads", options = {}) => {
   try {
     if (!fileBuffer) {

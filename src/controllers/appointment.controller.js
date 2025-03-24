@@ -27,6 +27,7 @@ exports.getUpcomingAppointments = async (req, res) => {
       appointmentNumber: appointment.appointmentNumber,
       doctorName: appointment.doctorName,
       doctorType: appointment.doctorType,
+      doctorImage: appointment.doctorImage,
       clinicName: appointment.clinicName,
       patientName: appointment.patientName,
       appointmentStatus: appointment.appointmentStatus,
@@ -38,7 +39,7 @@ exports.getUpcomingAppointments = async (req, res) => {
     res.status(STATUS_CODES.OK).json({
       statusCode: res.statusCode,
       count: appointmentData.length,
-      data: appointmentData,
+      appointmentData: appointmentData,
     });
   } catch (error) {
     res.status(error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR).json({

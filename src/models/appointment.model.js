@@ -90,6 +90,10 @@ const AppointmentSchema = new Schema(
       enum: ["Confirmed", "Pending", "Rescheduled", "Cancelled", "Completed"],
       default: "Pending",
     },
+    doctorImage: {
+      type: String,
+      default: null,
+    },
     fee: {
       type: Number,
       required: true,
