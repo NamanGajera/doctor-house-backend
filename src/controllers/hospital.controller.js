@@ -19,7 +19,7 @@ exports.getTopHospitals = async (req, res) => {
 
     res.status(STATUS_CODES.OK).json({
       statusCode: res.statusCode,
-      data: topHospitalData,
+      topHospital: topHospitalData,
     });
   } catch (error) {
     res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({

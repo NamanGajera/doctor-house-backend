@@ -10,7 +10,7 @@ exports.getTopDoctors = async (req, res) => {
     const topDoctorData = topDoctors.map((data) => ({
       id: data._id,
       name: data.name,
-      doctorType: data.doctorType,
+      doctorType: data.specializations?.[0] ?? null,
       experience: data.experience,
       rating: data.rating,
       address: data.address,
@@ -28,7 +28,7 @@ exports.getTopDoctors = async (req, res) => {
     }));
 
     res.status(STATUS_CODES.OK).json({
-      data: topDoctorData,
+      topDoctor: topDoctorData,
       statusCode: res.statusCode,
     });
   } catch (error) {
