@@ -31,44 +31,66 @@ exports.getHospitalById = async (hospitalId) => {
 
 exports.toggleHospitalLike = async (hospitalId, userId, isLiked) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(hospitalId)) {
-      throw new ErrorResponse("Invalid hospital ID", STATUS_CODES.BAD_REQUEST);
+    // Input validation
+    if (!hospitalId || !mongoose.Types.ObjectId.isValid(hospitalId)) {
+      throw new ErrorResponse(
+        "Invalid or missing hospital ID",
+        STATUS_CODES.BAD_REQUEST
+      );
     }
-    console.log(`hospitalId ${hospitalId}`);
 
-    const hospitalDetails = await hospital.findById(hospitalId);
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      throw new ErrorResponse(
+        "Invalid or missing user ID",
+        STATUS_CODES.BAD_REQUEST
+      );
+    }
 
-    console.log(`hospitalDetails ${hospitalDetails}`);
-
-    if (!hospitalDetails) {
+    // Check hospital exists
+    const hospitalExists = await hospital.exists({ _id: hospitalId });
+    if (!hospitalExists) {
       throw new ErrorResponse("Hospital not found", STATUS_CODES.NOT_FOUND);
     }
 
-    if (isLiked) {
-      if (!hospitalDetails.likedBy.includes(userId)) {
-        hospitalDetails.likedBy.push(userId);
-      }
-      hospitalDetails.isLiked = true;
-    } else {
-      const userIndex = hospitalDetails.likedBy.indexOf(userId);
-      if (userIndex > -1) {
-        hospitalDetails.likedBy.splice(userIndex, 1);
-      }
+    const updateOperation = isLiked
+      ? {
+          $addToSet: { likedBy: userId },
+          $set: { isLiked: true },
+        }
+      : {
+          $pull: { likedBy: userId },
+          $set: { isLiked: false },
+        };
 
-      hospitalDetails.isLiked = hospitalDetails.likedBy.length > 0;
+    const updatedHospital = await hospital.findByIdAndUpdate(
+      hospitalId,
+      updateOperation,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!updatedHospital) {
+      throw new ErrorResponse(
+        "Failed to update hospital",
+        STATUS_CODES.INTERNAL_SERVER_ERROR
+      );
     }
 
-    await hospitalDetails.save();
-
+    // Return consistent response
     return {
-      isLiked: hospitalDetails.isLiked,
-      likedCount: hospitalDetails.likedBy.length,
+      isLiked: updatedHospital.likedBy.includes(userId),
+      likedCount: updatedHospital.likedBy.length,
     };
   } catch (error) {
-    throw new ErrorResponse(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
+    console.error("Toggle Hospital Like Error:", error);
+    throw new ErrorResponse(
+      error.message || "Failed to update hospital like status",
+      error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 };
-
 exports.getLikesHospital = async (userId) => {
   try {
     const likedHospital = await hospital.find({ likedBy: userId });

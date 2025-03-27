@@ -40,42 +40,71 @@ exports.getAllCategories = async () => {
   }
 };
 
-exports.toggleDoctorLike = async (doctorId, userId, isWishlisted) => {
+exports.toggleDoctorLike = async (doctorId, userId, isLiked) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(doctorId)) {
-      throw new ErrorResponse("Invalid doctor ID", STATUS_CODES.BAD_REQUEST);
+    if (!doctorId || !mongoose.Types.ObjectId.isValid(doctorId)) {
+      throw new ErrorResponse(
+        "Invalid or missing doctor ID",
+        STATUS_CODES.BAD_REQUEST
+      );
     }
-    const doctorDetails = await doctor.findById(doctorId);
 
-    if (!doctorDetails) {
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      throw new ErrorResponse(
+        "Invalid or missing user ID",
+        STATUS_CODES.BAD_REQUEST
+      );
+    }
+
+    const existingDoctor = await doctor.findById(doctorId);
+    if (!existingDoctor) {
       throw new ErrorResponse("Doctor not found", STATUS_CODES.NOT_FOUND);
     }
 
-    // If isWishlisted is true, add to wishlist
-    if (isWishlisted) {
-      // Check if user is not already in likedBy array
-      if (!doctorDetails.likedBy.includes(userId)) {
-        doctorDetails.likedBy.push(userId);
-      }
-      doctorDetails.isLiked = true;
+    let updateResult;
+    if (isLiked) {
+      updateResult = await doctor.findByIdAndUpdate(
+        doctorId,
+        {
+          $addToSet: { likedBy: userId },
+          $set: { isLiked: true },
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
     } else {
-      // If isWishlisted is false, remove from wishlist
-      const userIndex = doctorDetails.likedBy.indexOf(userId);
-      if (userIndex > -1) {
-        doctorDetails.likedBy.splice(userIndex, 1);
-      }
-      // Update isLiked based on remaining liked users
-      doctorDetails.isLiked = doctorDetails.likedBy.length > 0;
+      updateResult = await doctor.findByIdAndUpdate(
+        doctorId,
+        {
+          $pull: { likedBy: userId },
+          $set: { isLiked: false },
+        },
+        {
+          new: true,
+          runValidators: true,
+        }
+      );
     }
 
-    await doctorDetails.save();
+    if (!updateResult) {
+      throw new ErrorResponse(
+        "Failed to update doctor",
+        STATUS_CODES.INTERNAL_SERVER_ERROR
+      );
+    }
 
     return {
-      isLiked: doctorDetails.isLiked,
-      likedCount: doctorDetails.likedBy.length,
+      isLiked: updateResult.likedBy.includes(userId),
+      likedCount: updateResult.likedBy.length,
     };
   } catch (error) {
-    throw new ErrorResponse(error.message, STATUS_CODES.BAD_REQUEST);
+    console.error("Toggle Doctor Like Error:", error);
+    throw new ErrorResponse(
+      error.message || "Failed to update doctor like status",
+      error.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR
+    );
   }
 };
 
@@ -96,17 +125,20 @@ exports.getUserLikedDoctors = async (userId) => {
 
 exports.getDoctorByCategoryId = async (categoryId) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-      throw new ErrorResponse("Invalid category id", STATUS_CODES.BAD_REQUEST);
+    if (!categoryId || !mongoose.Types.ObjectId.isValid(categoryId)) {
+      const allDoctorsData = await doctor.find();
+      return await attachCategoriesToDoctors(allDoctorsData);
     }
 
     const doctorsData = await doctor.find({ categoryId: categoryId });
 
-    if (doctorsData.length === 0) {
+    const doctorsWithCategories = await attachCategoriesToDoctors(doctorsData);
+
+    if (doctorsWithCategories.length === 0) {
       return [];
     }
 
-    return doctorsData;
+    return doctorsWithCategories;
   } catch (error) {
     throw new ErrorResponse(error.message, STATUS_CODES.INTERNAL_SERVER_ERROR);
   }

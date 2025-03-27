@@ -83,6 +83,7 @@ const hospitalSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        index: true,
       },
     ],
     longitude: {

@@ -16,13 +16,11 @@ exports.getTopDoctors = async (req, res) => {
       address: data.address,
       isLiked: data.isLiked,
       categoryId: data.categoryId,
-      // Include category information
       category: data.category
         ? {
             id: data.category._id,
             name: data.category.name,
-            description: data.category.description,
-            // Include other category fields as needed
+            image: data.category.image,
           }
         : null,
     }));
@@ -48,7 +46,7 @@ exports.getDoctorById = async (req, res) => {
     const formattedDoctorDetails = {
       id: doctorDetails._id,
       name: doctorDetails.name,
-      doctorType: doctorDetails.doctorType,
+      doctorType: data.specializations?.[0] ?? null,
       experience: doctorDetails.experience,
       rating: doctorDetails.rating,
       city: doctorDetails.city,
@@ -66,7 +64,7 @@ exports.getDoctorById = async (req, res) => {
     };
 
     res.status(STATUS_CODES.OK).json({
-      data: formattedDoctorDetails,
+      doctorData: formattedDoctorDetails,
       statusCode: res.statusCode,
     });
   } catch (error) {
@@ -170,28 +168,28 @@ exports.getDoctorBYCategoryId = async (req, res) => {
 
     const docData = await doctorService.getDoctorByCategoryId(categoryId);
 
-    const formattedDoctorData = docData.map((doctorDetails) => ({
-      id: doctorDetails._id,
-      name: doctorDetails.name,
-      doctorType: doctorDetails.doctorType,
-      experience: doctorDetails.experience,
-      rating: doctorDetails.rating,
-      city: doctorDetails.city,
-      state: doctorDetails.state,
-      address: doctorDetails.address,
-      latitude: doctorDetails.latitude,
-      longitude: doctorDetails.longitude,
-      isLiked: doctorDetails.isLiked,
-      about: doctorDetails.about,
-      specializations: doctorDetails.specializations,
-      qualifications: doctorDetails.qualifications,
-      workingHours: doctorDetails.workingHours,
-      timeSlots: doctorDetails.timeSlots,
-      hospitalId: doctorDetails.hospitalId,
+    const formattedDoctorData = docData.map((doctor) => ({
+      id: doctor._id,
+      name: doctor.name,
+      doctorType: doctor.doctorType,
+      experience: doctor.experience,
+      rating: doctor.rating,
+      city: doctor.city,
+      state: doctor.state,
+      address: doctor.address,
+      isLiked: doctor.isLiked,
+      categoryId: doctor.categoryId,
+      category: doctor.category
+        ? {
+            id: doctor.category._id,
+            name: doctor.category.name,
+            image: doctor.category.image,
+          }
+        : null,
     }));
 
     res.status(STATUS_CODES.OK).json({
-      data: formattedDoctorData,
+      doctorData: formattedDoctorData,
       statusCode: STATUS_CODES.OK,
     });
   } catch (error) {

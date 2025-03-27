@@ -6,7 +6,7 @@ exports.getTopHospitals = async (req, res) => {
   try {
     const topHospital = await hospitalService.getTopHospitals();
 
-    const topHospitalData = await topHospital.map((data) => ({
+    const topHospitalData = topHospital.map((data) => ({
       id: data._id,
       name: data.name || null,
       hospitalType: data.hospitalType || null,
@@ -14,7 +14,7 @@ exports.getTopHospitals = async (req, res) => {
       rating: data.rating || null,
       address: data.address || null,
       contactNumber: data.contactNumber || null,
-      isLiked: data.isLiked || null,
+      isLiked: data.isLiked,
     }));
 
     res.status(STATUS_CODES.OK).json({

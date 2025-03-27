@@ -121,6 +121,7 @@ const doctorSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        index: true,
       },
     ],
     about: {
@@ -143,6 +144,10 @@ const doctorSchema = new mongoose.Schema(
         },
       },
     ],
+    specializations: {
+      type: Array,
+      default: [],
+    },
     workingHours: [workingHoursSchema],
     timeSlots: [timeSlotSchema],
     hospitalId: {
