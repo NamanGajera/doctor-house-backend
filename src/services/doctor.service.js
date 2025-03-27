@@ -4,6 +4,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const STATUS_CODES = require("../utils/statusCodes");
 const mongoose = require("mongoose");
 const { attachCategoriesToDoctors } = require("../utils/doctor.utils");
+const { transformObjectIds } = require("../utils/common_functions");
 
 exports.getTopDoctors = async () => {
   try {
@@ -17,7 +18,7 @@ exports.getTopDoctors = async () => {
 
 exports.getDoctorById = async (doctorId) => {
   try {
-    if (!mongoose.Types.ObjectId.isValid(doctorId)) {
+    if (!doctorId || !mongoose.Types.ObjectId.isValid(doctorId)) {
       throw new ErrorResponse("Invalid doctor ID", STATUS_CODES.BAD_REQUEST);
     }
     const doctorDetails = await doctor.findById(doctorId);
@@ -113,8 +114,10 @@ exports.getUserLikedDoctors = async (userId) => {
   try {
     const likedDoctors = await doctor.find({ likedBy: userId });
 
-    return likedDoctors.map((doc) => ({
-      id: doc._id,
+    const formattedDoctor = await transformObjectIds(likedDoctors);
+
+    return formattedDoctor.map((doc) => ({
+      id: doc.id,
       name: doc.name,
       isLiked: true, // Since we're fetching liked doctors, this is always true
     }));

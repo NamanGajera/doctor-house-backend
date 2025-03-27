@@ -3,6 +3,7 @@ const ErrorResponse = require("../utils/errorResponse");
 const STATUS_CODES = require("../utils/statusCodes");
 const mongoose = require("mongoose");
 const { getUserLikedDoctors } = require("./doctor.service");
+const { transformObjectIds } = require("../utils/common_functions");
 
 exports.getTopHospitals = async () => {
   try {
@@ -95,8 +96,10 @@ exports.getLikesHospital = async (userId) => {
   try {
     const likedHospital = await hospital.find({ likedBy: userId });
 
-    return likedHospital.map((hospital) => ({
-      id: hospital._id,
+    const formatedHospital = await transformObjectIds(likedHospital);
+
+    return formatedHospital.map((hospital) => ({
+      id: hospital.id,
       name: hospital.name || null,
       hospitalType: hospital.hospitalType || null,
       experience: hospital.experience || null,

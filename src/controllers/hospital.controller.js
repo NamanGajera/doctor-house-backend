@@ -1,13 +1,16 @@
 const hospitalService = require("../services/hospital.service");
 const STATUS_CODES = require("../utils/statusCodes");
 const doctor = require("../models/doctor.model");
+const { transformObjectIds } = require("../utils/common_functions");
 
 exports.getTopHospitals = async (req, res) => {
   try {
     const topHospital = await hospitalService.getTopHospitals();
 
-    const topHospitalData = topHospital.map((data) => ({
-      id: data._id,
+    const formattedHospital = await transformObjectIds(topHospital);
+
+    const topHospitalData = formattedHospital.map((data) => ({
+      id: data.id,
       name: data.name || null,
       hospitalType: data.hospitalType || null,
       experience: data.experience || null,
@@ -35,12 +38,16 @@ exports.getHospitalById = async (req, res) => {
     const hospitalId = req.params.id;
     const hospitalDetails = await hospitalService.getHospitalById(hospitalId);
 
+    const formattedHospital = await transformObjectIds(hospitalDetails);
+
     const doctorDetails = await doctor.find({ hospitalId: hospitalId });
 
+    const formattedDoctor = await transformObjectIds(doctorDetails);
+
     const formattedDoctorDetails =
-      doctorDetails.length > 0
-        ? doctorDetails.map((doc) => ({
-            id: doc._id,
+      formattedDoctor.length > 0
+        ? formattedDoctor.map((doc) => ({
+            id: doc.id,
             hospitalId: doc.hospitalId,
             name: doc.name,
             doctorType: doc.doctorType,
@@ -52,24 +59,24 @@ exports.getHospitalById = async (req, res) => {
         : null; // Return null if no doctors found
 
     const formattedHospitalDetails = {
-      id: hospitalDetails._id,
-      name: hospitalDetails.name || null,
-      hospitalType: hospitalDetails.hospitalType || null,
-      experience: hospitalDetails.experience || null,
-      rating: hospitalDetails.rating || null,
-      address: hospitalDetails.address || null,
-      contactNumber: hospitalDetails.contactNumber || null,
-      isLiked: hospitalDetails.isLiked,
-      city: hospitalDetails.city || null,
-      state: hospitalDetails.state || null,
-      latitude: hospitalDetails.latitude || null,
-      longitude: hospitalDetails.longitude || null,
-      distance: hospitalDetails.distance || null,
-      openHours: hospitalDetails.openHours || null,
-      website: hospitalDetails.website || null,
-      treatment: hospitalDetails.treatments || null,
+      id: formattedHospital.id,
+      name: formattedHospital.name || null,
+      hospitalType: formattedHospital.hospitalType || null,
+      experience: formattedHospital.experience || null,
+      rating: formattedHospital.rating || null,
+      address: formattedHospital.address || null,
+      contactNumber: formattedHospital.contactNumber || null,
+      isLiked: formattedHospital.isLiked,
+      city: formattedHospital.city || null,
+      state: formattedHospital.state || null,
+      latitude: formattedHospital.latitude || null,
+      longitude: formattedHospital.longitude || null,
+      distance: formattedHospital.distance || null,
+      openHours: formattedHospital.openHours || null,
+      website: formattedHospital.website || null,
+      treatment: formattedHospital.treatments || null,
       doctors: formattedDoctorDetails, // Will be null if no doctors found
-      gallery: hospitalDetails.gallery || null,
+      gallery: formattedHospital.gallery || null,
     };
 
     res.status(STATUS_CODES.OK).json({

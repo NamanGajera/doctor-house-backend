@@ -2,25 +2,28 @@ const { default: mongoose } = require("mongoose");
 const doctorService = require("../services/doctor.service");
 const STATUS_CODES = require("../utils/statusCodes");
 const ErrorResponse = require("../utils/errorResponse");
+const { transformObjectIds } = require("../utils/common_functions");
 
 exports.getTopDoctors = async (req, res) => {
   try {
     const topDoctors = await doctorService.getTopDoctors();
 
-    const topDoctorData = topDoctors.map((data) => ({
-      id: data._id,
-      name: data.name,
-      doctorType: data.specializations?.[0] ?? null,
-      experience: data.experience,
-      rating: data.rating,
-      address: data.address,
-      isLiked: data.isLiked,
-      categoryId: data.categoryId,
-      category: data.category
+    const formattedDoctorData = await transformObjectIds(topDoctors);
+
+    const topDoctorData = formattedDoctorData.map((doctor) => ({
+      id: doctor.id,
+      name: doctor.name,
+      doctorType: doctor.specializations?.[0] ?? null,
+      experience: doctor.experience,
+      rating: doctor.rating,
+      address: doctor.address,
+      isLiked: doctor.isLiked,
+      categoryId: doctor.categoryId,
+      category: doctor.category
         ? {
-            id: data.category._id,
-            name: data.category.name,
-            image: data.category.image,
+            id: doctor.category.id,
+            name: doctor.category.name,
+            image: doctor.category.image,
           }
         : null,
     }));
@@ -43,24 +46,26 @@ exports.getDoctorById = async (req, res) => {
     const doctorId = req.params.id;
     const doctorDetails = await doctorService.getDoctorById(doctorId);
 
+    const doctorData = await transformObjectIds(doctorDetails);
+
     const formattedDoctorDetails = {
-      id: doctorDetails._id,
-      name: doctorDetails.name,
-      doctorType: data.specializations?.[0] ?? null,
-      experience: doctorDetails.experience,
-      rating: doctorDetails.rating,
-      city: doctorDetails.city,
-      state: doctorDetails.state,
-      address: doctorDetails.address,
-      latitude: doctorDetails.latitude,
-      longitude: doctorDetails.longitude,
-      isLiked: doctorDetails.isLiked,
-      about: doctorDetails.about,
-      specializations: doctorDetails.specializations,
-      qualifications: doctorDetails.qualifications,
-      workingHours: doctorDetails.workingHours,
-      timeSlots: doctorDetails.timeSlots,
-      hospitalId: doctorDetails.hospitalId,
+      id: doctorData.id,
+      name: doctorData.name,
+      doctorType: doctorData.specializations?.[0] ?? null,
+      experience: doctorData.experience,
+      rating: doctorData.rating,
+      city: doctorData.city,
+      state: doctorData.state,
+      address: doctorData.address,
+      latitude: doctorData.latitude,
+      longitude: doctorData.longitude,
+      isLiked: doctorData.isLiked,
+      about: doctorData.about,
+      specializations: doctorData.specializations,
+      qualifications: doctorData.qualifications,
+      workingHours: doctorData.workingHours,
+      timeSlots: doctorData.timeSlots,
+      hospitalId: doctorData.hospitalId,
     };
 
     res.status(STATUS_CODES.OK).json({
@@ -80,8 +85,10 @@ exports.getCategory = async (req, res) => {
   try {
     const categories = await doctorService.getAllCategories();
 
-    const formattedCategories = categories.map((category) => ({
-      id: category._id,
+    const formattedCategoryData = await transformObjectIds(categories);
+
+    const formattedCategories = formattedCategoryData.map((category) => ({
+      id: category.id,
       name: category.name,
       image: category.image,
     }));
@@ -168,8 +175,10 @@ exports.getDoctorBYCategoryId = async (req, res) => {
 
     const docData = await doctorService.getDoctorByCategoryId(categoryId);
 
-    const formattedDoctorData = docData.map((doctor) => ({
-      id: doctor._id,
+    const formattedDoctor = await transformObjectIds(docData);
+
+    const formattedDoctorData = formattedDoctor.map((doctor) => ({
+      id: doctor.id,
       name: doctor.name,
       doctorType: doctor.doctorType,
       experience: doctor.experience,
@@ -181,7 +190,7 @@ exports.getDoctorBYCategoryId = async (req, res) => {
       categoryId: doctor.categoryId,
       category: doctor.category
         ? {
-            id: doctor.category._id,
+            id: doctor.category.id,
             name: doctor.category.name,
             image: doctor.category.image,
           }

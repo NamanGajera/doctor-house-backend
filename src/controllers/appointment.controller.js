@@ -1,5 +1,6 @@
 const appointmentService = require("../services/appointment.service");
 const STATUS_CODES = require("../utils/statusCodes");
+const { transformObjectIds } = require("../utils/common_functions");
 
 exports.getUpcomingAppointments = async (req, res) => {
   try {
@@ -19,9 +20,11 @@ exports.getUpcomingAppointments = async (req, res) => {
       options
     );
 
+    const formattedAppointment = await transformObjectIds(appointments);
+
     // Map the response to include necessary fields
     const appointmentData = appointments.map((appointment) => ({
-      id: appointment._id,
+      id: appointment.id,
       appointmentId: appointment.appointmentId,
       appointmentDate: appointment.appointmentDate,
       appointmentNumber: appointment.appointmentNumber,
