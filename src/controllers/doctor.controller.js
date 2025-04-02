@@ -171,8 +171,6 @@ exports.getDoctorBYCategoryId = async (req, res) => {
   try {
     const categoryId = req.params.id;
 
-    console.log(`doctorData ${categoryId}`);
-
     const docData = await doctorService.getDoctorByCategoryId(categoryId);
 
     const formattedDoctor = await transformObjectIds(docData);
@@ -180,7 +178,7 @@ exports.getDoctorBYCategoryId = async (req, res) => {
     const formattedDoctorData = formattedDoctor.map((doctor) => ({
       id: doctor.id,
       name: doctor.name,
-      doctorType: doctor.doctorType,
+      doctorType: doctor.specializations?.[0] ?? null,
       experience: doctor.experience,
       rating: doctor.rating,
       city: doctor.city,

@@ -29,6 +29,7 @@ const formatAuthResponse = (user) => {
       name: user.name || null,
       email: user.email || null,
       role: user.role || null,
+      profileImage: user.profileImage || null,
       isProfileCompleted: user.isProfileCompleted || false,
     },
   };

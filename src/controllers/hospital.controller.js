@@ -50,7 +50,7 @@ exports.getHospitalById = async (req, res) => {
             id: doc.id,
             hospitalId: doc.hospitalId,
             name: doc.name,
-            doctorType: doc.doctorType,
+            doctorType: doc.specializations?.[0] ?? null,
             experience: doc.experience,
             rating: doc.rating,
             address: doc.address,
@@ -80,7 +80,7 @@ exports.getHospitalById = async (req, res) => {
     };
 
     res.status(STATUS_CODES.OK).json({
-      data: formattedHospitalDetails,
+      hospitalData: formattedHospitalDetails,
       statusCode: STATUS_CODES.OK,
     });
   } catch (error) {
