@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "root",
+    "password": "Naman$Gajera$2302",
+    "database": "doctor_house_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

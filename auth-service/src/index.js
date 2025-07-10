@@ -7,7 +7,7 @@ const morgan = require("morgan");
 
 const { STATUS_CODE } = Enums;
 
-const apiRoute = require("./routes");
+const authRoute = require("./routes");
 
 const app = express();
 
@@ -15,7 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-app.use("/api", apiRoute);
+app.use("/auth", authRoute);
 
 app.use((req, res, next) => {
   ErrorResponse.message = `${req.method} ${req.path} not found`;
@@ -24,7 +24,7 @@ app.use((req, res, next) => {
   res.status(STATUS_CODE.NOT_FOUND).json(ErrorResponse);
 });
 
-app.get('/api/test', (req, res) => {
+app.get('/auth/test', (req, res) => {
   res.json({ message: 'Server is working!' });
 });
 
@@ -34,8 +34,10 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).json(ErrorResponse);
 });
 
-app.listen(serverConfig.PORT, () => {
-  console.log("Server started on port", serverConfig.PORT);
+const PORT = serverConfig.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Server started on port", PORT);
   // scheduledCrons.scheduledCrons();
 }).on('error', (err) => {
   console.error('Server failed to start:', err);
