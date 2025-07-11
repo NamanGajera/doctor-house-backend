@@ -8,6 +8,15 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
+    develop:
+      watch:
+        - action: sync
+          path: ./auth-service
+          target: /src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
     depends_on:
       - mysql
     ports:
@@ -20,15 +29,24 @@ services:
     container_name: api-gateway
     ports:
       - "3000:3000"
+    develop:
+      watch:
+        - action: sync
+          path: ./api-gateway
+          target: /src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
     depends_on:
       - auth-service
 
   mysql:
     image: mysql:8.0
-    container_name: shared-mysql
+    container_name: mysql
     restart: always
     environment:
-      MYSQL_DATABASE: doctor_house_db
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3307:3306"

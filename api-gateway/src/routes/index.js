@@ -1,8 +1,8 @@
-// const bookingController = require("./booking-route");
+const authRoute = require("./auth-route");
 const express = require("express");
 
 const router = express.Router();
 
-// router.use("/booking", bookingController);
+router.use("/auth", authRoute);
 
 module.exports = router;

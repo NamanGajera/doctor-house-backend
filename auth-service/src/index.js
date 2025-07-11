@@ -24,9 +24,6 @@ app.use((req, res, next) => {
   res.status(STATUS_CODE.NOT_FOUND).json(ErrorResponse);
 });
 
-app.get("/auth/test", (req, res) => {
-  res.json({ message: "Server is working!" });
-});
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -36,21 +33,28 @@ app.use((err, req, res, next) => {
 
 const PORT = serverConfig.PORT || 3000;
 
-app
-  .listen(PORT, () => {
-    console.log(`Auth Service running on port ${PORT}`);
-    // scheduledCrons.scheduledCrons();
-  })
-  .on("error", (err) => {
-    console.log(`Auth Service running failed ${PORT}`);
-  });
+async function waitForDB(maxRetries = 10, delayMs = 2000) {
+  let retries = 0;
+  while (retries < maxRetries) {
+    try {
+      await db.authenticate();
+      console.log("✅ Database connection established");
+      return;
+    } catch (err) {
+      console.warn(`⏳ Waiting for DB... (${retries + 1}/${maxRetries})`);
+      await new Promise(res => setTimeout(res, delayMs));
+      retries++;
+    }
+  }
+  throw new Error("❌ Could not connect to the database after several retries.");
+}
 
-// app.listen(PORT, async () => {
-//   console.log(`Auth Service running on port ${PORT}`);
-//   try {
-//     await db.authenticate();
-//     console.log("Database connected");
-//   } catch (error) {
-//     console.error("DB connection failed:", error);
-//   }
-// });
+app.listen(PORT, async () => {
+  console.log(`Auth Service running on port ${PORT}`);
+  try {
+    await waitForDB(); // ⬅️ add this line
+  } catch (error) {
+    console.error("DB connection failed:", error);
+    process.exit(1);
+  }
+});

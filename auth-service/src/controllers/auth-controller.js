@@ -1,25 +1,34 @@
 const { AuthService } = require("../services");
+const { Enums } = require("../utils/common");
+const { SuccessResponse, ErrorResponse } = require("../utils/common");
+const { STATUS_CODE } = Enums;
 
-async function register(req, res) {
-  try {
-    const user = await AuthService.register(req.body);
-    res.status(201).json({ message: "User created", data: user });
-  } catch (error) {
-    console.log("Error", error);
-    res.status(400).json({ error: error.message });
+class AuthController {
+  async register(req, res) {
+    const { email, password } = req.body;
+    try {
+      const user = await AuthService.register({ email, password });
+      SuccessResponse.data = user;
+      SuccessResponse.message = "Successfully user an registered";
+      return res.status(STATUS_CODE.CREATED).json(SuccessResponse);
+    } catch (error) {
+      ErrorResponse.message = error.message;
+      res.status(error.statusCode).json(ErrorResponse);
+    }
+  }
+
+  async login(req, res) {
+    const { email, password } = req.body;
+    try {
+      const user = await AuthService.login({ email, password });
+      SuccessResponse.data = user;
+      SuccessResponse.message = "Login successful";
+      return res.status(STATUS_CODE.CREATED).json(SuccessResponse);
+    } catch (error) {
+      ErrorResponse.message = error.message;
+      res.status(error.statusCode).json(ErrorResponse);
+    }
   }
 }
 
-async function login(req, res) {
-  try {
-    const user = await AuthService.login(req.body);
-    res.status(200).json({ message: "Login successful", data: user });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-}
-
-module.exports = {
-  login,
-  register,
-};
+module.exports = new AuthController();

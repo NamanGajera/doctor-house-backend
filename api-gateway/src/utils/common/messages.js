@@ -63,10 +63,6 @@ const Messages = {
   INVALID_PARAMETERS: "Invalid parameters provided",
   REQUEST_TIMEOUT: "Request timeout",
   TOO_MANY_REQUESTS: "Too many requests, please try again later",
-
-
-  USER_NOT_FOUND: "User not found",
-  INVALID_CREDENTIAL: "Invalid credentials",
 };
 
 module.exports = Messages;
