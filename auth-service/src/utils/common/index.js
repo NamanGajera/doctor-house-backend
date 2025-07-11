@@ -3,4 +3,5 @@ module.exports = {
   SuccessResponse: require("./success-response"),
   Enums: require("./enum"),
   Messages: require("./messages"),
+  Regex: require("./regex"),
 };

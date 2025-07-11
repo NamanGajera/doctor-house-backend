@@ -17,7 +17,7 @@ const Messages = {
   REQUIRED_BODY: "Request body is required",
   INVALID_FORMAT: (field) => `${field} format is invalid`,
   INVALID_EMAIL: "Invalid email format",
-  INVALID_PHONE: "Invalid phone number format",
+  INVALID_PHONE: "Invalid phone number",
   INVALID_DATE: "Invalid date format",
 
   // Server & Database
@@ -63,7 +63,6 @@ const Messages = {
   INVALID_PARAMETERS: "Invalid parameters provided",
   REQUEST_TIMEOUT: "Request timeout",
   TOO_MANY_REQUESTS: "Too many requests, please try again later",
-
 
   USER_NOT_FOUND: "User not found",
   INVALID_CREDENTIAL: "Invalid credentials",

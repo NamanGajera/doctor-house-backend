@@ -5,11 +5,14 @@ const { SuccessResponse, ErrorResponse } = require("../utils/common");
 const { STATUS_CODE } = Enums;
 
 class AuthController {
-  async register(req, res) {
-    const { email, password } = req.body;
+  async registerPatient(req, res) {
+    const { email, password, name, phone } = req.body;
     try {
-      const response = await AuthService.register({
-        email, password
+      const response = await AuthService.registerPatient({
+        email,
+        password,
+        name,
+        phone,
       });
       return res.status(STATUS_CODE.CREATED).json(response);
     } catch (error) {
@@ -21,7 +24,8 @@ class AuthController {
     const { email, password } = req.body;
     try {
       const response = await AuthService.login({
-        email, password
+        email,
+        password,
       });
       return res.status(STATUS_CODE.CREATED).json(response);
     } catch (error) {
@@ -32,4 +36,3 @@ class AuthController {
 }
 
 module.exports = new AuthController();
-

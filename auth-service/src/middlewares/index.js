@@ -1,3 +1,4 @@
 module.exports = {
-    AuthMiddleware: require("./auth-middlewares"),
+  AuthMiddleware: require("./auth-middlewares"),
+  PatientMiddleware: require("./patient-middlewares"),
 };

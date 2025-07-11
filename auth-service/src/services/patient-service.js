@@ -10,27 +10,18 @@ const { STATUS_CODE } = Enums;
 
 const userRepository = new UserRepository();
 
-class AuthService {
-  async login(data) {
+class PatientService {
+  async register(data) {
     try {
-      const user = await userRepository.findByEmail(data.email);
-      if (!user) {
-        throw new AppError(Messages.USER_NOT_FOUND, STATUS_CODE.NOT_FOUND);
-      }
-      const isMatch = await bcrypt.compare(data.password, user.password);
-      if (!isMatch) {
-        throw new AppError(
-          Messages.INVALID_CREDENTIAL,
-          STATUS_CODE.INTERNAL_SERVER_ERROR
-        );
-      }
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const user = await userRepository.create({
+        ...data,
+        password: hashedPassword,
+      });
       const token = generateToken(user.id);
       return { user, token };
     } catch (error) {
-      if (error instanceof AppError) {
-        throw error;
-      }
-
+      console.log("Error==>>>>>\n", error);
       if (error instanceof BaseError) {
         const message =
           error.errors?.[0]?.message ||
@@ -47,4 +38,4 @@ class AuthService {
   }
 }
 
-module.exports = new AuthService();
+module.exports = new PatientService();

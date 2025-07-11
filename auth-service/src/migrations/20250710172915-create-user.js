@@ -1,5 +1,8 @@
 "use strict";
 /** @type {import('sequelize-cli').Migration} */
+
+const { Enums } = require("../utils/common");
+
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("Users", {
@@ -17,6 +20,20 @@ module.exports = {
       password: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      phone: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: Sequelize.ENUM,
+        allowNull: false,
+        values: Object.values(Enums.USER_ROLE),
+        defaultValue: Enums.USER_ROLE.PATIENT,
       },
       createdAt: {
         allowNull: false,

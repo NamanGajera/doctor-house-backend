@@ -14,5 +14,10 @@ module.exports = {
     NOT_IMPLEMENTED: 501,
     SERVICE_UNAVAILABLE: 503,
   },
-
+  USER_ROLE: {
+    ADMIN: "Admin",
+    DOCTOR: "Doctor",
+    PATIENT: "Patient",
+    HOSPITAL: "Hospital",
+  },
 };

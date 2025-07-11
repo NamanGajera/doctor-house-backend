@@ -1,17 +1,11 @@
 const axios = require("axios");
-const AppError = require("../utils/errors/app-error");
-const { BaseError } = require("sequelize");
 const { serverConfig } = require("../config");
-const { Enums, Messages } = require("../utils/common");
-
-const { STATUS_CODE } = Enums;
-
 
 class AuthService {
-  async register(data) {
+  async registerPatient(data) {
     try {
       const response = await axios.post(
-        `${serverConfig.AUTH_BASE_URL}/register`,
+        `${serverConfig.AUTH_BASE_URL}/patient/register`,
         data
       );
       return response.data;

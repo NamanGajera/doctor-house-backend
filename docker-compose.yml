@@ -17,8 +17,6 @@ services:
             - node_modules/
         - action: rebuild
           path: package.json
-    depends_on:
-      - mysql
     ports:
       - "5001:5001"
 
@@ -40,13 +38,3 @@ services:
           path: package.json
     depends_on:
       - auth-service
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    restart: always
-    environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-    ports:
-      - "3307:3306"

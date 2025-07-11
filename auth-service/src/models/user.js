@@ -1,5 +1,8 @@
 "use strict";
 const { Model } = require("sequelize");
+
+const { Enums } = require("../utils/common");
+
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -21,6 +24,20 @@ module.exports = (sequelize, DataTypes) => {
       password: {
         type: DataTypes.STRING,
         allowNull: false,
+      },
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      role: {
+        type: DataTypes.ENUM,
+        allowNull: false,
+        values: Object.values(Enums.USER_ROLE),
+        defaultValue: Enums.USER_ROLE.PATIENT,
       },
     },
     {
