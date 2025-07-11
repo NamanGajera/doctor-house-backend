@@ -25,7 +25,7 @@ class AuthService {
         );
       }
       const token = generateToken(user.id);
-      return { user, token };
+      return { token, user };
     } catch (error) {
       if (error instanceof AppError) {
         throw error;

@@ -18,6 +18,7 @@ class PatientController {
       SuccessResponse.message = "Patient registered successfully";
       return res.status(STATUS_CODE.CREATED).json(SuccessResponse);
     } catch (error) {
+      console.log("Error----------->>", error);
       ErrorResponse.message = error.message;
       res.status(error.statusCode).json(ErrorResponse);
     }

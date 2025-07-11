@@ -2,43 +2,53 @@
 /** @type {import('sequelize-cli').Migration} */
 
 const { Enums } = require("../utils/common");
-
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable("Patients", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      email: {
-        type: Sequelize.STRING,
-        unique: true,
+      patientId: {
+        type: Sequelize.INTEGER,
         allowNull: false,
+        references: {
+          model: "Users",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
-      password: {
+      fullName: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
-      name: {
+      firstName: {
         type: Sequelize.STRING,
-        allowNull: false,
+      },
+      lastName: {
+        type: Sequelize.STRING,
+      },
+      surname: {
+        type: Sequelize.STRING,
       },
       phone: {
         type: Sequelize.STRING,
-        allowNull: false,
       },
-      role: {
+      email: {
+        type: Sequelize.STRING,
+      },
+      gender: {
         type: Sequelize.ENUM,
-        allowNull: false,
-        values: Object.values(Enums.USER_ROLE),
-        defaultValue: Enums.USER_ROLE.PATIENT,
+        values: Object.values(Enums.GENDER),
+        defaultValue: Enums.GENDER.MALE,
       },
-      isProfileDone: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
+      profilePic: {
+        type: Sequelize.STRING,
+      },
+      age: {
+        type: Sequelize.INTEGER,
       },
       createdAt: {
         allowNull: false,
@@ -51,6 +61,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable("Patients");
   },
 };

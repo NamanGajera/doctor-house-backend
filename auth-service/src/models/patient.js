@@ -1,57 +1,64 @@
 "use strict";
 const { Model } = require("sequelize");
-
 const { Enums } = require("../utils/common");
 
 module.exports = (sequelize, DataTypes) => {
-  class User extends Model {
+  class Patient extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      User.hasOne(models.Patient, {
+      // define association here
+      Patient.belongsTo(models.User, {
         foreignKey: "patientId",
-        as: "patientData",
+        onDelete: "CASCADE",
       });
     }
   }
-  User.init(
+  Patient.init(
     {
-      email: {
+      fullName: {
         type: DataTypes.STRING,
-        unique: true,
-        allowNull: false,
       },
-      password: {
+      firstName: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
-      name: {
+      lastName: {
         type: DataTypes.STRING,
-        allowNull: false,
+      },
+      surname: {
+        type: DataTypes.STRING,
       },
       phone: {
         type: DataTypes.STRING,
-        allowNull: false,
       },
-      isProfileDone: {
-        type: DataTypes.BOOLEAN,
+      email: {
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: false,
+        unique: true,
       },
-      role: {
+      gender: {
         type: DataTypes.ENUM,
-        allowNull: false,
-        values: Object.values(Enums.USER_ROLE),
-        defaultValue: Enums.USER_ROLE.PATIENT,
+        values: Object.values(Enums.GENDER),
+        defaultValue: Enums.GENDER.MALE,
+      },
+      profilePic: {
+        type: DataTypes.STRING,
+      },
+      age: {
+        type: DataTypes.INTEGER,
+      },
+      patientId: {
+        type: DataTypes.INTEGER,
+        allowNull:false,
       },
     },
     {
       sequelize,
-      modelName: "User",
+      modelName: "Patient",
     }
   );
-  return User;
+  return Patient;
 };

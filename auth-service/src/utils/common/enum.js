@@ -20,4 +20,9 @@ module.exports = {
     PATIENT: "Patient",
     HOSPITAL: "Hospital",
   },
+  GENDER: {
+    MALE: "Male",
+    FEMALE: "Female",
+    OTHER: "Other",
+  },
 };
