@@ -1,5 +1,5 @@
 node_modules/
-# .env
+.env
 combine.log
 src/config/config.json
-# eslint.config.mjs
+eslint.config.mjs
