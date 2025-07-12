@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "patientId",
         as: "patientData",
       });
+      User.hasOne(models.Doctor, {
+        foreignKey: "doctorId",
+        as: "doctorData",
+      });
     }
   }
   User.init(
@@ -28,13 +32,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      name: {
+      fullName: {
         type: DataTypes.STRING,
         allowNull: false,
       },
       phone: {
         type: DataTypes.STRING,
         allowNull: false,
+        unique: true,
       },
       isProfileDone: {
         type: DataTypes.BOOLEAN,

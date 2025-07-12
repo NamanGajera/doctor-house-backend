@@ -21,13 +21,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      name: {
+      fullName: {
         type: Sequelize.STRING,
         allowNull: false,
       },
       phone: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       role: {
         type: Sequelize.ENUM,

@@ -1,5 +1,10 @@
 const bcrypt = require("bcryptjs");
-const { UserRepository } = require("../repositories");
+const {
+  UserRepository,
+  PatientRepository,
+  DoctorRepository,
+} = require("../repositories");
+const db = require("../models");
 const AppError = require("../utils/errors/app-error");
 const { Enums } = require("../utils/common");
 const { BaseError } = require("sequelize");
@@ -9,6 +14,8 @@ const { generateToken } = require("../utils/helpers/generate-token");
 const { STATUS_CODE } = Enums;
 
 const userRepository = new UserRepository();
+const patientRepository = new PatientRepository();
+const doctorRepository = new DoctorRepository();
 
 class AuthService {
   async login(data) {
@@ -31,6 +38,84 @@ class AuthService {
         throw error;
       }
 
+      if (error instanceof BaseError) {
+        const message =
+          error.errors?.[0]?.message ||
+          error.message ||
+          Messages.SOMETHING_WRONG;
+        throw new AppError(message, STATUS_CODE.BAD_REQUEST);
+      }
+
+      throw new AppError(
+        Messages.SOMETHING_WRONG,
+        STATUS_CODE.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async registerPatient(data) {
+    const transaction = await db.sequelize.transaction();
+
+    try {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const payload = {
+        fullName: data.fullName,
+        email: data.email,
+        password: hashedPassword,
+        phone: data.phone,
+        role: data.role,
+      };
+      const user = await userRepository.registerUser(payload, transaction);
+      await patientRepository.createPatient(
+        { ...payload, patientId: user.id },
+        transaction
+      );
+
+      const token = generateToken(user.id);
+      await transaction.commit();
+      return { token, user };
+    } catch (error) {
+      await transaction.rollback();
+      console.log("Error==>>>>>\n", error);
+      if (error instanceof BaseError) {
+        const message =
+          error.errors?.[0]?.message ||
+          error.message ||
+          Messages.SOMETHING_WRONG;
+        throw new AppError(message, STATUS_CODE.BAD_REQUEST);
+      }
+
+      throw new AppError(
+        Messages.SOMETHING_WRONG,
+        STATUS_CODE.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+  async registerDoctor(data) {
+    console.log("Doctor Data ==>>", data);
+    const transaction = await db.sequelize.transaction();
+
+    try {
+      const hashedPassword = await bcrypt.hash(data.password, 10);
+      const payload = {
+        fullName: data.fullName,
+        email: data.email,
+        password: hashedPassword,
+        phone: data.phone,
+        role: data.role,
+      };
+      const user = await userRepository.registerUser(payload, transaction);
+      await doctorRepository.createDoctor(
+        { ...payload, doctorId: user.id },
+        transaction
+      );
+
+      const token = generateToken(user.id);
+      await transaction.commit();
+      return { token, user };
+    } catch (error) {
+      await transaction.rollback();
+      console.log("Error==>>>>>\n", error);
       if (error instanceof BaseError) {
         const message =
           error.errors?.[0]?.message ||

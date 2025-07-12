@@ -2,18 +2,20 @@
 /** @type {import('sequelize-cli').Migration} */
 
 const { Enums } = require("../utils/common");
+
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Patients", {
+    await queryInterface.createTable("Doctors", {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      patientId: {
+      doctorId: {
         type: Sequelize.INTEGER,
         allowNull: false,
+        unique: true,
         references: {
           model: "Users",
           key: "id",
@@ -39,6 +41,8 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING,
+        allowNull: false,
+        unique: true,
       },
       gender: {
         type: Sequelize.ENUM,
@@ -51,6 +55,20 @@ module.exports = {
       age: {
         type: Sequelize.INTEGER,
       },
+      experience: {
+        type: Sequelize.INTEGER,
+        default: 0,
+      },
+      specialization: {
+        type: Sequelize.JSON,
+        allowNull: false,
+        defaultValue: [],
+      },
+      qualifications: {
+        type: Sequelize.JSON,
+        allowNull: false,
+        defaultValue: [],
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -62,6 +80,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Patients");
+    await queryInterface.dropTable("Doctors");
   },
 };
