@@ -9,8 +9,8 @@
   "local": {
     "username": "root",
     "password": "Naman@Gajera#2302",
-    "database": "database_development",
-    "host": "127.0.0.1",
+    "database": "doctor_house_db",
+    "host": "host.docker.internal",
     "dialect": "mysql"
   }
 }

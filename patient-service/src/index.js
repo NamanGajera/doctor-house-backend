@@ -2,10 +2,9 @@ const express = require("express");
 const morgan = require("morgan");
 
 const { serverConfig, db } = require("./config");
-const consumers = require("./consumers/doctor-consumer");
+const consumers = require("./consumers/patient-consumer");
 const rabbitMQ = require("./config/rabbitmq");
 const { Enums } = require("./utils/common");
-const scheduledCrons = require("./utils/common/cron-jobs");
 const { ErrorResponse } = require("./utils/common");
 
 const { STATUS_CODE } = Enums;
@@ -54,12 +53,12 @@ async function waitForDB(maxRetries = 10, delayMs = 2000) {
 }
 
 app.listen(PORT, async () => {
-  console.log(`Docotr Service running on port ${PORT}`);
+  console.log(`Patient Service running on port ${PORT}`);
   try {
     await waitForDB();
     await rabbitMQ.connectRabbitMQ();
-    console.log("[doctor-service] RabbitMQ connection established");
-    consumers.listenToDoctorRegistered();
+    console.log("[patient-service] RabbitMQ connection established");
+    consumers.listenToPatientRegistered();
   } catch (error) {
     console.error("DB connection failed:", error);
     process.exit(1);

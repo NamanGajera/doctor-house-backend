@@ -1,9 +1,10 @@
 "use strict";
 const { Model } = require("sequelize");
+
 const { Enums } = require("../utils/common");
 
 module.exports = (sequelize, DataTypes) => {
-  class Patient extends Model {
+  class Doctor extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,14 +12,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Patient.belongsTo(models.User, {
-        foreignKey: "patientId",
-        onDelete: "CASCADE",
-      });
     }
   }
-  Patient.init(
+  Doctor.init(
     {
+      userId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        unique: true,
+      },
       fullName: {
         type: DataTypes.STRING,
       },
@@ -51,15 +53,25 @@ module.exports = (sequelize, DataTypes) => {
       age: {
         type: DataTypes.INTEGER,
       },
-      patientId: {
+      experience: {
         type: DataTypes.INTEGER,
+        default: 0,
+      },
+      specialization: {
+        type: DataTypes.JSON,
         allowNull: false,
+        defaultValue: [],
+      },
+      qualifications: {
+        type: DataTypes.JSON,
+        allowNull: false,
+        defaultValue: [],
       },
     },
     {
       sequelize,
-      modelName: "Patient",
+      modelName: "Doctor",
     }
   );
-  return Patient;
+  return Doctor;
 };

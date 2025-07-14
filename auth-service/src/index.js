@@ -1,5 +1,6 @@
 const express = require("express");
-const { serverConfig, logger, db } = require("./config");
+const { serverConfig, db } = require("./config");
+const rabbitMQ = require("./config/rabbitmq");
 const { Enums } = require("./utils/common");
 const scheduledCrons = require("./utils/common/cron-jobs");
 const { ErrorResponse } = require("./utils/common");
@@ -31,7 +32,7 @@ app.use((err, req, res, next) => {
   res.status(err.statusCode || 500).json(ErrorResponse);
 });
 
-const PORT = serverConfig.PORT || 3000;
+const PORT = serverConfig.PORT || 5001;
 
 async function waitForDB(maxRetries = 10, delayMs = 2000) {
   let retries = 0;
@@ -52,7 +53,9 @@ async function waitForDB(maxRetries = 10, delayMs = 2000) {
 app.listen(PORT, async () => {
   console.log(`Auth Service running on port ${PORT}`);
   try {
-    await waitForDB(); // ⬅️ add this line
+    await waitForDB();
+    await rabbitMQ.connectRabbitMQ();
+    console.log("Auth RabbitMQ connected successfully");
   } catch (error) {
     console.error("DB connection failed:", error);
     process.exit(1);

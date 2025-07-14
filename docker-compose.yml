@@ -1,4 +1,21 @@
 services:
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - '3000:3000'
+    develop:
+      watch:
+        - action: sync
+          path: ./api-gateway
+          target: /src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    depends_on:
+      - auth-service
+
   auth-service:
     build: ./auth-service
     container_name: auth-service
@@ -18,23 +35,48 @@ services:
         - action: rebuild
           path: package.json
     ports:
-      - "5001:5001"
+      - '5001:5001'
 
-  # Add more services here (e.g., user-service) using the same DB config
-
-  api-gateway:
-    build: ./api-gateway
-    container_name: api-gateway
-    ports:
-      - "3000:3000"
+  doctor-service:
+    build: ./doctor-service
+    container_name: doctor-service
+    environment:
+      - PORT=5002
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
     develop:
       watch:
         - action: sync
-          path: ./api-gateway
+          path: ./doctor-service
           target: /src
           ignore:
             - node_modules/
         - action: rebuild
           path: package.json
-    depends_on:
-      - auth-service
+    ports:
+      - '5002:5002'
+
+  patient-service:
+    build: ./patient-service
+    container_name: patient-service
+    environment:
+      - PORT=5003
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+    develop:
+      watch:
+        - action: sync
+          path: ./patient-service
+          target: /src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    ports:
+      - '5003:5003'
+
+  

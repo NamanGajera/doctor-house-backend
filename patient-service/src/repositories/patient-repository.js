@@ -10,6 +10,15 @@ class PatientRepository extends CrudRepository {
     const response = await Patient.create(data, { transaction: transaction });
     return response;
   }
+
+  createPatientFromEvent = async ({ userId, fullName, email, phone }) => {
+    return await Patient.create({
+      userId,
+      fullName,
+      email,
+      phone,
+    });
+  };
 }
 
 module.exports = PatientRepository;

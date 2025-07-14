@@ -1,18 +1,18 @@
-"use strict";
+'use strict';
 /** @type {import('sequelize-cli').Migration} */
 
 const { Enums } = require("../utils/common");
 
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("Doctors", {
+    await queryInterface.createTable('Patients', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER,
       },
-      doctorId: {
+      userId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         unique: true,
@@ -55,31 +55,17 @@ module.exports = {
       age: {
         type: Sequelize.INTEGER,
       },
-      experience: {
-        type: Sequelize.INTEGER,
-        default: 0,
-      },
-      specialization: {
-        type: Sequelize.JSON,
-        allowNull: false,
-        defaultValue: [],
-      },
-      qualifications: {
-        type: Sequelize.JSON,
-        allowNull: false,
-        defaultValue: [],
-      },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE,
+        type: Sequelize.DATE
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE,
-      },
+        type: Sequelize.DATE
+      }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("Doctors");
-  },
+    await queryInterface.dropTable('Patients');
+  }
 };

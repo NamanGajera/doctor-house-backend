@@ -1,21 +1,17 @@
 const bcrypt = require("bcryptjs");
-const {
-  UserRepository,
-  PatientRepository,
-  DoctorRepository,
-} = require("../repositories");
+const { UserRepository } = require("../repositories");
 const db = require("../models");
 const AppError = require("../utils/errors/app-error");
 const { Enums } = require("../utils/common");
 const { BaseError } = require("sequelize");
 const { Messages } = require("../utils/common");
 const { generateToken } = require("../utils/helpers/generate-token");
+const { publishDoctorCreated, publishPatientCreated } = require("../queues/publisher");
+
 
 const { STATUS_CODE } = Enums;
 
 const userRepository = new UserRepository();
-const patientRepository = new PatientRepository();
-const doctorRepository = new DoctorRepository();
 
 class AuthService {
   async login(data) {
@@ -66,11 +62,12 @@ class AuthService {
         role: data.role,
       };
       const user = await userRepository.registerUser(payload, transaction);
-      await patientRepository.createPatient(
-        { ...payload, patientId: user.id },
-        transaction
-      );
-
+      await publishPatientCreated({
+        userId: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+      });
       const token = generateToken(user.id);
       await transaction.commit();
       return { token, user };
@@ -105,10 +102,12 @@ class AuthService {
         role: data.role,
       };
       const user = await userRepository.registerUser(payload, transaction);
-      await doctorRepository.createDoctor(
-        { ...payload, doctorId: user.id },
-        transaction
-      );
+      await publishDoctorCreated({
+        userId: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        phone: user.phone,
+      });
 
       const token = generateToken(user.id);
       await transaction.commit();
