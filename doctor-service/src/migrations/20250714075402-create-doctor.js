@@ -55,6 +55,14 @@ module.exports = {
       age: {
         type: Sequelize.INTEGER,
       },
+      rating: {
+        type: Sequelize.FLOAT,
+        defaultValue: 0,
+        validate: {
+          min: 0,
+          max: 5
+        }
+      },
       experience: {
         type: Sequelize.INTEGER,
         default: 0,

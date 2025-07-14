@@ -1,6 +1,5 @@
 const { AuthService } = require("../services");
-const { Enums } = require("../utils/common");
-const { SuccessResponse, ErrorResponse } = require("../utils/common");
+const { SuccessResponse, ErrorResponse, Enums } = require("../utils/common");
 
 const { STATUS_CODE } = Enums;
 

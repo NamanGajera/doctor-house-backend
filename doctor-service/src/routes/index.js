@@ -1,8 +1,8 @@
-const authRoutes = require("./auth-routes");
+const doctorRoute = require("./doctor-routes");
 const express = require("express");
 
 const router = express.Router();
 
-router.use("/auth", authRoutes);
+router.use("/doctor", doctorRoute);
 
 module.exports = router;

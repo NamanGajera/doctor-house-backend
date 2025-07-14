@@ -11,7 +11,7 @@ const { ErrorResponse } = require("./utils/common");
 const { STATUS_CODE } = Enums;
 
 
-const authRoute = require("./routes");
+const apiRoute = require("./routes");
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-app.use("/api", authRoute);
+app.use("/api", apiRoute);
 
 app.use((req, res, next) => {
   ErrorResponse.message = `${req.method} ${req.path} not found`;
@@ -54,7 +54,7 @@ async function waitForDB(maxRetries = 10, delayMs = 2000) {
 }
 
 app.listen(PORT, async () => {
-  console.log(`Docotr Service running on port ${PORT}`);
+  console.log(`Doctor Service running on port ${PORT}`);
   try {
     await waitForDB();
     await rabbitMQ.connectRabbitMQ();

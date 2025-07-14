@@ -1,5 +1,5 @@
 const express = require("express");
-const { serverConfig, logger, db } = require("./config");
+const { serverConfig } = require("./config");
 const { Enums } = require("./utils/common");
 const { ErrorResponse } = require("./utils/common");
 const morgan = require("morgan");

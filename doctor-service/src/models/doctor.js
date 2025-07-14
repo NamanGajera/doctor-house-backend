@@ -57,6 +57,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         default: 0,
       },
+      rating: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0,
+        validate: {
+          min: 0,
+          max: 5
+        }
+      },
       specialization: {
         type: DataTypes.JSON,
         allowNull: false,
