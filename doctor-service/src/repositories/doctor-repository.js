@@ -1,3 +1,4 @@
+const { where } = require("sequelize");
 const { Doctor } = require("../models");
 const CrudRepository = require("./crud-repository");
 
@@ -8,6 +9,15 @@ class DoctorRepository extends CrudRepository {
 
   async createDoctor(data, transaction) {
     const response = await Doctor.create(data, { transaction: transaction });
+    return response;
+  }
+
+  async findDoctor(id) {
+    const response = await Doctor.findOne({
+      where: {
+        userId: id,
+      },
+    });
     return response;
   }
 
