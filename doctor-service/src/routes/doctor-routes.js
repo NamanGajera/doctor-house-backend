@@ -5,18 +5,12 @@ const authenticate = require("../middlewares/auth-middlewares");
 
 
 
-router.get(
-    "/",
-    authenticate,
-    DoctorController.getAllDoctors
-);
-
-router.get(
-    "/:id",
-    authenticate,
-    DoctorController.getDoctor
-);
+router.get("/", authenticate, DoctorController.getAllDoctors);
 
 router.post("/like/:doctorId", authenticate, DoctorController.toggleLike);
+
+router.get("/liked", authenticate, DoctorController.getAllLikedDoctor);
+
+router.get("/:id", authenticate, DoctorController.getDoctor);
 
 module.exports = router;

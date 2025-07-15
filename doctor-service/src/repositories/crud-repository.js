@@ -1,6 +1,7 @@
 const { logger } = require("../config");
 const AppError = require("../utils/errors/app-error");
 const { Enums } = require("../utils/common");
+const { where } = require("sequelize");
 const { STATUS_CODE } = Enums;
 
 class CrudRepository {
@@ -27,6 +28,11 @@ class CrudRepository {
 
   async get(data) {
     const response = await this.model.findByPk(data);
+    return response;
+  }
+
+  async findOne(data) {
+    const response = await this.model.findOne({ where: data });
     return response;
   }
 

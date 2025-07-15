@@ -5,8 +5,13 @@ const { STATUS_CODE } = Enums;
 
 class DoctorController {
     async getAllDoctors(req, res) {
+        console.log("getAllDoctors => ", req.params);
+        console.log("getAllDoctors => ", req.query);
         try {
-            const doctors = await DoctorService.getAllDoctors();
+            const doctors = await DoctorService.getAllDoctors({
+                userId: req.user.id,
+                query: req.query,
+            });
             SuccessResponse.data = doctors;
             SuccessResponse.message = "Doctors fetched successfully";
             return res.status(STATUS_CODE.OK).json(SuccessResponse);
@@ -29,8 +34,16 @@ class DoctorController {
     async toggleLike(req, res) {
         try {
             const doctors = await DoctorService.toggleLike(req.user.id, req.params.doctorId);
-            SuccessResponse.data = doctors;
-            return res.status(STATUS_CODE.OK).json(SuccessResponse);
+            return res.status(STATUS_CODE.OK).json(doctors);
+        } catch (error) {
+            ErrorResponse.message = error.message;
+            return res.status(error.statusCode || STATUS_CODE.INTERNAL_SERVER_ERROR).json(ErrorResponse);
+        }
+    }
+    async getAllLikedDoctor(req, res) {
+        try {
+            const doctors = await DoctorService.getAllLikedDoctor(req.user.id);
+            return res.status(STATUS_CODE.OK).json(doctors);
         } catch (error) {
             ErrorResponse.message = error.message;
             return res.status(error.statusCode || STATUS_CODE.INTERNAL_SERVER_ERROR).json(ErrorResponse);

@@ -6,10 +6,11 @@ const { STATUS_CODE } = Enums;
 
 class DoctorController {
     async getAllDoctor(req, res) {
+        console.log("Query--> ", req.query);
         try {
             const response = await DoctorService.getAllDoctor({
                 Authorization: req.headers.authorization
-            });
+            }, req.query);
             return res.status(STATUS_CODE.CREATED).json(response);
         } catch (error) {
             ErrorResponse.message = error.message;
@@ -32,6 +33,18 @@ class DoctorController {
         try {
             const response = await DoctorService.toggleLike(req.params.doctorId, {
                 Authorization: req.headers.authorization
+            });
+            return res.status(STATUS_CODE.CREATED).json(response);
+        } catch (error) {
+            ErrorResponse.message = error.message;
+            res.status(error.statusCode || 500).json(ErrorResponse);
+        }
+    }
+    async getAllLikedDoctor(req, res) {
+        try {
+            const response = await DoctorService.getAllLikedDoctor({
+                Authorization: req.headers.authorization,
+
             });
             return res.status(STATUS_CODE.CREATED).json(response);
         } catch (error) {

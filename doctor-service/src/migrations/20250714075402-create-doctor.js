@@ -55,6 +55,10 @@ module.exports = {
       age: {
         type: Sequelize.INTEGER,
       },
+      likeCount: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       rating: {
         type: Sequelize.FLOAT,
         defaultValue: 0,
@@ -66,11 +70,6 @@ module.exports = {
       experience: {
         type: Sequelize.INTEGER,
         default: 0,
-      },
-      specialization: {
-        type: Sequelize.JSON,
-        allowNull: false,
-        defaultValue: [],
       },
       qualifications: {
         type: Sequelize.JSON,

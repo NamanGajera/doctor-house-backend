@@ -12,6 +12,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Doctor.hasMany(models.DoctorLikes, {
+        foreignKey: "doctorId",
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE"
+      });
+
+      Doctor.belongsToMany(models.Specialization, {
+        through: "DoctorSpecializations",
+        foreignKey: "doctorId",
+        otherKey: "specializationId",
+        as: "specialization",
+        onDelete: "CASCADE",
+      });
     }
   }
   Doctor.init(
@@ -53,6 +66,10 @@ module.exports = (sequelize, DataTypes) => {
       age: {
         type: DataTypes.INTEGER,
       },
+      likeCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
       experience: {
         type: DataTypes.INTEGER,
         default: 0,
@@ -64,11 +81,6 @@ module.exports = (sequelize, DataTypes) => {
           min: 0,
           max: 5
         }
-      },
-      specialization: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: [],
       },
       qualifications: {
         type: DataTypes.JSON,

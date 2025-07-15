@@ -2,11 +2,13 @@ const axios = require("axios");
 const { serverConfig } = require("../config");
 
 class DoctorService {
-    async getAllDoctor(headers) {
+    async getAllDoctor(headers, query) {
+        console.log("Query data -->", query);
         try {
             const response = await axios.get(
                 `${serverConfig.DOCTOR_BASE_URL}`, {
-                headers: headers
+                headers: headers,
+                params: query
             }
             );
             return response.data;
@@ -32,6 +34,18 @@ class DoctorService {
         try {
             const response = await axios.post(
                 `${serverConfig.DOCTOR_BASE_URL}/like/${doctorId}`, {}, {
+                headers: headers
+            }
+            );
+            return response.data;
+        } catch (error) {
+            throw error.response.data;
+        }
+    }
+    async getAllLikedDoctor(headers) {
+        try {
+            const response = await axios.get(
+                `${serverConfig.DOCTOR_BASE_URL}/liked`, {
                 headers: headers
             }
             );
