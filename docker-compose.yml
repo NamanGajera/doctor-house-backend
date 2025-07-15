@@ -3,7 +3,7 @@ services:
     build: ./api-gateway
     container_name: api-gateway
     ports:
-      - '3000:3000'
+      - "3000:3000"
     develop:
       watch:
         - action: sync
@@ -35,7 +35,7 @@ services:
         - action: rebuild
           path: package.json
     ports:
-      - '5001:5001'
+      - "5001:5001"
 
   doctor-service:
     build: ./doctor-service
@@ -56,7 +56,7 @@ services:
         - action: rebuild
           path: package.json
     ports:
-      - '5002:5002'
+      - "5002:5002"
 
   patient-service:
     build: ./patient-service
@@ -77,6 +77,25 @@ services:
         - action: rebuild
           path: package.json
     ports:
-      - '5003:5003'
+      - "5003:5003"
 
-  
+  location-service:
+    build: ./location-service
+    container_name: location-service
+    environment:
+      - PORT=5003
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+    develop:
+      watch:
+        - action: sync
+          path: ./location-service
+          target: /src
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    ports:
+      - "5003:5003"

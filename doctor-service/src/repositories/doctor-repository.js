@@ -18,6 +18,14 @@ class DoctorRepository extends CrudRepository {
       where: {
         userId: id,
       },
+      include: [
+        {
+          model: Specialization,
+          as: "specialization",
+          attributes: ["id", "name"],
+          through: { attributes: [] },
+        },
+      ],
     });
     return response;
   }
@@ -31,14 +39,14 @@ class DoctorRepository extends CrudRepository {
           model: DoctorLikes,
           where: { userId },
           required: false,
-          attributes: []
+          attributes: [],
         },
         {
           model: Specialization,
           as: "specialization",
           attributes: ["id", "name"],
-          through: { attributes: [] }
-        }
+          through: { attributes: [] },
+        },
       ],
       attributes: {
         include: [
@@ -51,10 +59,10 @@ class DoctorRepository extends CrudRepository {
               AND DoctorLikes.userId = ${sequelize.escape(userId)}
             )
             `),
-            "isLiked"
-          ]
-        ]
-      }
+            "isLiked",
+          ],
+        ],
+      },
     });
     const updatedDoctors = doctors.map((doctor) => {
       const json = doctor.toJSON();

@@ -4,6 +4,7 @@ const AppError = require("../utils/errors/app-error");
 const { Enums } = require("../utils/common");
 const { BaseError } = require("sequelize");
 const { Messages } = require("../utils/common");
+const CloudinaryService = require("./cloudinary-service");
 
 const { STATUS_CODE } = Enums;
 const doctorRepository = new DoctorRepository();
@@ -18,10 +19,13 @@ class DoctorService {
     try {
       if (query.minRating) {
         customFilter.rating = {
-          [Op.gte]: query.minRating
+          [Op.gte]: query.minRating,
         };
       }
-      const doctors = await doctorRepository.findAllDoctors(userId, customFilter);
+      const doctors = await doctorRepository.findAllDoctors(
+        userId,
+        customFilter
+      );
       return doctors;
     } catch (error) {
       console.error("Error in DoctorService.getAllDoctors:", error);
@@ -43,13 +47,15 @@ class DoctorService {
   async getDoctor(id) {
     try {
       const doctor = await doctorRepository.findDoctor(id);
-      const like = await doctorLikesRepository.findOne({ doctorId: doctor.userId });
+      const like = await doctorLikesRepository.findOne({
+        doctorId: doctor.userId,
+      });
       if (!doctor) {
         throw new AppError("Doctor not found", STATUS_CODE.NOT_FOUND);
       }
       return {
         ...doctor.toJSON(),
-        isLiked: !!like
+        isLiked: !!like,
       };
     } catch (error) {
       console.error("Error in DoctorService.getDoctor:", error);
@@ -100,6 +106,48 @@ class DoctorService {
       return { data: response };
     } catch (error) {
       console.error("Error in DoctorService.getAllLikedDoctor:", error);
+      if (error instanceof AppError) {
+        throw error;
+      }
+      if (error instanceof BaseError) {
+        const message =
+          error.errors?.[0]?.message ||
+          error.message ||
+          Messages.SOMETHING_WRONG;
+        throw new AppError(message, STATUS_CODE.BAD_REQUEST);
+      }
+      throw new AppError(
+        Messages.SOMETHING_WRONG,
+        STATUS_CODE.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
+
+  async updateDoctor(doctorId, data, files) {
+    try {
+      const doctor = await doctorRepository.findDoctor(doctorId);
+
+      if (!doctor) {
+        throw new AppError("Doctor not found", STATUS_CODE.NOT_FOUND);
+      }
+      const uploadResults = await CloudinaryService.uploadMultiple(
+        files,
+        `Doctors/${doctorId}`
+      );
+      console.log("uploadResults", uploadResults);
+      const updatedData = {
+        ...data,
+        profilePic: uploadResults.profilePic || null,
+      };
+      console.log("Updated Data-->", updatedData);
+
+      const updatedDoctor = await doctorRepository.update(
+        doctorId,
+        updatedData
+      );
+      return updatedDoctor;
+    } catch (error) {
+      console.error("Error in DoctorService.updateDoctor:", error);
       if (error instanceof AppError) {
         throw error;
       }
