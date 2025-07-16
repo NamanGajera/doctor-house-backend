@@ -83,7 +83,7 @@ services:
     build: ./location-service
     container_name: location-service
     environment:
-      - PORT=5003
+      - PORT=5004
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -98,4 +98,4 @@ services:
         - action: rebuild
           path: package.json
     ports:
-      - "5003:5003"
+      - "5004:5004"

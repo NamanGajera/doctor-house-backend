@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Expose the service port (optional, but good for clarity)
-EXPOSE 5003
+EXPOSE 5004
 
 # Start the app
 CMD ["npm", "run", "dev"]

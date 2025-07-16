@@ -71,6 +71,62 @@ module.exports = {
         type: Sequelize.INTEGER,
         default: 0,
       },
+      // Add inside up() after 'qualifications':
+      countryId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Countries",
+          key: "id"
+        },
+        onDelete: "SET NULL",
+      },
+
+      stateId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "States",
+          key: "id"
+        },
+        onDelete: "SET NULL",
+      },
+
+      cityId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Cities",
+          key: "id"
+        },
+        onDelete: "SET NULL",
+      },
+
+      pincodeId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Pincodes",
+          key: "id"
+        },
+        onDelete: "SET NULL",
+      },
+
+      areaId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "Areas",
+          key: "id"
+        },
+        onDelete: "SET NULL",
+      },
+
+      addressLine: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+
       qualifications: {
         type: Sequelize.JSON,
         allowNull: false,

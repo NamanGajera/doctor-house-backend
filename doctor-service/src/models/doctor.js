@@ -70,6 +70,30 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      countryId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      stateId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      cityId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      pincodeId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      areaId: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+      },
+      addressLine: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
       experience: {
         type: DataTypes.INTEGER,
         default: 0,
